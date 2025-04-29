@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="meal-planner.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html" class="active">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="meal-planner-container">
+        <h1 class="meal-planner-title">Create Meal Plan</h1>
+        
+        <form id="meal-plan-form" class="meal-plan-form">
+            <!-- Basic Info Section -->
+            <div class="form-section">
+                <h2>Basic Information</h2>
+                <div class="form-group">
+                    <label for="plan-name">Meal Plan Name</label>
+                    <input type="text" id="plan-name" name="planName" required>
+                </div>
+                <div class="form-group">
+                    <label for="plan-description">Description</label>
+                    <textarea id="plan-description" name="description" rows="3"></textarea>
+                </div>
+            </div>
+
+            <!-- Daily Meals Section -->
+            <div class="form-section" id="daily-meals">
+                <h2>Daily Meals</h2>
+                
+                <!-- Monday -->
+                <div class="day-section">
+                    <h3>Monday</h3>
+                    <div class="meal-inputs">
+                        <div class="form-group">
+                            <label for="monday-meal">Meal Name</label>
+                            <input type="text" id="monday-meal" name="monday[meal]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="monday-ingredients">Ingredients</label>
+                            <div class="ingredient-list" id="monday-ingredients-list">
+                                <div class="ingredient-input">
+                                    <input type="text" name="monday[ingredients][]" placeholder="Enter ingredient" required>
+                                    <button type="button" class="remove-ingredient">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-ingredient" data-day="monday">Add Ingredient</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="monday-instructions">Instructions</label>
+                            <textarea id="monday-instructions" name="monday[instructions]" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tuesday -->
+                <div class="day-section">
+                    <h3>Tuesday</h3>
+                    <div class="meal-inputs">
+                        <div class="form-group">
+                            <label for="tuesday-meal">Meal Name</label>
+                            <input type="text" id="tuesday-meal" name="tuesday[meal]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tuesday-ingredients">Ingredients</label>
+                            <div class="ingredient-list" id="tuesday-ingredients-list">
+                                <div class="ingredient-input">
+                                    <input type="text" name="tuesday[ingredients][]" placeholder="Enter ingredient" required>
+                                    <button type="button" class="remove-ingredient">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-ingredient" data-day="tuesday">Add Ingredient</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="tuesday-instructions">Instructions</label>
+                            <textarea id="tuesday-instructions" name="tuesday[instructions]" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wednesday -->
+                <div class="day-section">
+                    <h3>Wednesday</h3>
+                    <div class="meal-inputs">
+                        <div class="form-group">
+                            <label for="wednesday-meal">Meal Name</label>
+                            <input type="text" id="wednesday-meal" name="wednesday[meal]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="wednesday-ingredients">Ingredients</label>
+                            <div class="ingredient-list" id="wednesday-ingredients-list">
+                                <div class="ingredient-input">
+                                    <input type="text" name="wednesday[ingredients][]" placeholder="Enter ingredient" required>
+                                    <button type="button" class="remove-ingredient">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-ingredient" data-day="wednesday">Add Ingredient</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="wednesday-instructions">Instructions</label>
+                            <textarea id="wednesday-instructions" name="wednesday[instructions]" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thursday -->
+                <div class="day-section">
+                    <h3>Thursday</h3>
+                    <div class="meal-inputs">
+                        <div class="form-group">
+                            <label for="thursday-meal">Meal Name</label>
+                            <input type="text" id="thursday-meal" name="thursday[meal]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="thursday-ingredients">Ingredients</label>
+                            <div class="ingredient-list" id="thursday-ingredients-list">
+                                <div class="ingredient-input">
+                                    <input type="text" name="thursday[ingredients][]" placeholder="Enter ingredient" required>
+                                    <button type="button" class="remove-ingredient">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-ingredient" data-day="thursday">Add Ingredient</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="thursday-instructions">Instructions</label>
+                            <textarea id="thursday-instructions" name="thursday[instructions]" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friday -->
+                <div class="day-section">
+                    <h3>Friday</h3>
+                    <div class="meal-inputs">
+                        <div class="form-group">
+                            <label for="friday-meal">Meal Name</label>
+                            <input type="text" id="friday-meal" name="friday[meal]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="friday-ingredients">Ingredients</label>
+                            <div class="ingredient-list" id="friday-ingredients-list">
+                                <div class="ingredient-input">
+                                    <input type="text" name="friday[ingredients][]" placeholder="Enter ingredient" required>
+                                    <button type="button" class="remove-ingredient">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-ingredient" data-day="friday">Add Ingredient</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="friday-instructions">Instructions</label>
+                            <textarea id="friday-instructions" name="friday[instructions]" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Save Meal Plan</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Recspicy Logo">
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="recipes-list.html">Recipes</a></li>
+                        <li><a href="meal-planner.html">Meal Planner</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms-privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms-privacy.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Recspicy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="navigation.js"></script>
+    <script src="meal-planner.js"></script>
+</body>
+</html>
