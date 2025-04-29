@@ -1,0 +1,230 @@
+.create-recipe-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.create-recipe-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.recipe-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section h2 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #b40000;
+    box-shadow: 0 0 0 2px rgba(180, 0, 0, 0.1);
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.ingredients-list,
+.instructions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ingredient-row,
+.instruction-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.ingredient-row input {
+    flex: 3;
+}
+
+.ingredient-row input[name="amounts[]"] {
+    flex: 1;
+}
+
+.ingredient-row input[name="units[]"] {
+    flex: 1;
+}
+
+.instruction-row {
+    position: relative;
+}
+
+.instruction-row textarea {
+    flex: 1;
+    min-height: 60px;
+    resize: vertical;
+}
+
+.step-number {
+    background: #b40000;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.75rem;
+}
+
+.remove-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    padding: 0;
+    margin-top: 0.75rem;
+}
+
+.remove-btn:hover {
+    background: #cc0000;
+}
+
+.add-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.add-btn:hover {
+    background: #388E3C;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.cancel-btn,
+.save-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background: #f5f5f5;
+}
+
+.save-btn {
+    background: #b40000;
+    border: none;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #8b0000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ingredient-row,
+    .instruction-row {
+        flex-direction: column;
+    }
+
+    .ingredient-row input,
+    .ingredient-row input[name="amounts[]"],
+    .ingredient-row input[name="units[]"] {
+        flex: 1;
+        width: 100%;
+    }
+
+    .remove-btn {
+        align-self: flex-end;
+        margin-top: 0.5rem;
+    }
+
+    .step-number {
+        position: absolute;
+        top: 0;
+        left: -32px;
+    }
+}
+

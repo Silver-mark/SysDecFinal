@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="recipe.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="recipes.html" class="active">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="search-container">
+        <div id="error-container" class="error-message">
+            <span id="error-message"></span>
+        </div>
+
+        <section class="search-header">
+            <h1 id="recipe-title" class="search-title"></h1>
+            
+            <div class="recipe-meta">
+                <div class="meta-item">
+                    <i class="fas fa-clock meta-icon"></i>
+                    <span id="recipe-time"></span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-utensils meta-icon"></i>
+                    <span id="recipe-servings"></span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-chart-line meta-icon"></i>
+                    <span id="recipe-difficulty"></span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-user meta-icon"></i>
+                    <span id="recipe-author"></span>
+                </div>
+            </div>
+            
+            <div class="recipe-actions">
+                <button id="star-btn" class="action-btn search-button" title="Rate this recipe">
+                    <i class="far fa-star"></i> 
+                    <span>Rate Recipe</span>
+                    <span id="star-count" class="count-badge">0</span>
+                </button>
+                <button id="favorite-btn" class="action-btn search-button" title="Add to favorites">
+                    <i class="far fa-heart"></i> 
+                    <span>Add to Favorites</span>
+                </button>
+                <button id="save-btn" class="action-btn search-button" title="Save recipe to your collection">
+                    <i class="far fa-bookmark"></i> 
+                    <span>Save Recipe</span>
+                </button>
+                <button id="print-btn" class="action-btn search-button" title="Print recipe">
+                    <i class="fas fa-print"></i> 
+                    <span>Print Recipe</span>
+                </button>
+                <button id="copy-btn" class="action-btn search-button" title="Copy recipe to your collection">
+                    <i class="fas fa-copy"></i> 
+                    <span>Copy Recipe</span>
+                </button>
+            </div>
+        </section>
+
+        <div class="recipe-image-container">
+            <img id="recipe-image" class="recipe-image" src="" alt="">
+        </div>
+
+        <div id="recipe-description" class="recipe-description"></div>
+
+        <div class="recipe-content">
+            <div class="recipe-main results-section">
+                <section class="recipe-section">
+                    <h2 class="filters-title">Ingredients</h2>
+                    <ul id="ingredients-list" class="ingredients-list"></ul>
+                </section>
+
+                <section class="recipe-section">
+                    <h2 class="filters-title">Instructions</h2>
+                    <ol id="instructions-list" class="instructions-list"></ol>
+                </section>
+            </div>
+
+            <div class="recipe-sidebar filters-section">
+                <section class="nutrition-card">
+                    <h2 class="filters-title">Nutrition Facts</h2>
+                    <div id="nutrition-facts" class="nutrition-grid"></div>
+                </section>
+
+                <section id="notes-section" class="notes-section" style="display: none;">
+                    <h2 class="filters-title">Recipe Notes</h2>
+                    <div id="recipe-notes" class="recipe-notes"></div>
+                </section>
+
+                <div id="recipe-tags" class="recipe-tags"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-message" class="toast-message"></div>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <section class="footer-section">
+                    <h3>About Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="landing.html">Landing Page</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Help</h3>
+                    <ul class="footer-links">
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="copyright.html">Copyright</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="mealdb-api.js"></script>
+    <script src="recipe-display.js"></script>
+</body>
+</html>

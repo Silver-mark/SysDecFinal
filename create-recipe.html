@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Recipe - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="create-recipe.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+ <!-- Navigation Bar -->
+ <nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <a href="index.html">
+                <img src="LOGO/logo.png" alt="Recspicy Logo">
+            </a>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="recipes.html">Recipes</a></li>
+                <li><a href="meal-planner.html">Meal Planner</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+        <div class="user-actions">
+            <a href="profile.html" class="profile-link active">My Profile</a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+    <main class="create-recipe-container">
+        <h1 class="create-recipe-title">Create New Recipe</h1>
+        
+        <form id="recipe-form" class="recipe-form">
+            <!-- Basic Info Section -->
+            <section class="form-section">
+                <div class="form-group">
+                    <label for="title">Recipe Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cookTime">Cooking Time (minutes)</label>
+                        <input type="number" id="cookTime" name="cookTime" min="1" value="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="servings">Servings</label>
+                        <input type="number" id="servings" name="servings" min="1" value="4" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Visibility</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="visibility" value="public" checked>
+                            Public
+                        </label>
+                        <label>
+                            <input type="radio" name="visibility" value="private">
+                            Private
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ingredients Section -->
+            <section class="form-section">
+                <h2>Ingredients</h2>
+                <div id="ingredients-list" class="ingredients-list">
+                    <div class="ingredient-row">
+                        <input type="text" name="ingredients[]" placeholder="Enter ingredient" required>
+                        <input type="text" name="amounts[]" placeholder="Amount">
+                        <input type="text" name="units[]" placeholder="Unit">
+                        <button type="button" class="remove-btn" title="Remove ingredient">×</button>
+                    </div>
+                </div>
+                <button type="button" id="add-ingredient" class="add-btn">Add Ingredient</button>
+            </section>
+
+            <!-- Instructions Section -->
+            <section class="form-section">
+                <h2>Instructions</h2>
+                <div id="instructions-list" class="instructions-list">
+                    <div class="instruction-row">
+                        <span class="step-number">1</span>
+                        <textarea name="instructions[]" rows="2" placeholder="Enter instruction step" required></textarea>
+                        <button type="button" class="remove-btn" title="Remove step">×</button>
+                    </div>
+                </div>
+                <button type="button" id="add-instruction" class="add-btn">Add Step</button>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="window.location.href='profile.html'">Cancel</button>
+                <button type="submit" class="save-btn">Save Recipe</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="LOGO/logo.png" alt="Recspicy Logo">
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="recipes.html">Recipes</a></li>
+                        <li><a href="meal-planner.html">Meal Planner</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Recspicy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="create-recipe.js"></script>
+</body>
+</html>

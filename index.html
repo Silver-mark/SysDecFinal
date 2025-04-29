@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recspicy - Discover Delicious Recipes</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="respicy-index.css">
+    <link rel="stylesheet" href="footer.css">
+    <!-- TheMealDB API Integration -->
+    <script src="mealdb-api.js"></script>
+</head>
+<body>
+    <header>
+        <nav id="nav-container" aria-label="Main navigation"></nav>
+    </header>
+
+    <main class="container" role="main">
+        <div class="hero-section">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Recspicy</h1>
+                <p class="hero-subtitle">Discover, create, and share delicious recipes</p>
+            </div>
+        </div>
+
+        <div class="quick-filters">
+            <button class="filter-btn active" data-filter="all">All Recipes</button>
+            <button class="filter-btn" data-filter="quick">Quick & Easy</button>
+            <button class="filter-btn" data-filter="vegetarian">Vegetarian</button>
+            <button class="filter-btn" data-filter="trending">Trending</button>
+            <button class="filter-btn" data-filter="popular">Most Popular</button>
+        </div>
+
+        <div id="recipe-sections">
+            <section class="recipe-section">
+                <h2 class="section-title">Trending Today</h2>
+                <div class="recipe-scroll" id="trending-today"></div>
+            </section>
+
+            <section class="recipe-section">
+                <h2 class="section-title">Check These Out</h2>
+                <div class="recipe-scroll" id="check-these-out"></div>
+            </section>
+
+            <section class="recipe-section">
+                <h2 class="section-title">Recommended For You</h2>
+                <div class="recipe-scroll" id="recommended-for-you"></div>
+            </section>
+        </div>
+    </main>
+
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <section class="footer-section">
+                    <h3>About Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="landing.html">Landing Page</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Help</h3>
+                    <ul class="footer-links">
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="copyright.html">Copyright</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="navigation.js"></script>
+    <script src="respicy-index.js"></script>
+</body>
+</html>

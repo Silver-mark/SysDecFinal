@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Recspicy</title>
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="recipes.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link active">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <!-- Remove the preferences section and add create recipe button -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/150?text=Profile" alt="Profile" class="profile-avatar">
+            <div class="profile-info">
+                <h1 class="profile-name">User</h1>
+                <p class="profile-bio">Loading bio...</p>
+                <div class="profile-actions">
+                    <button id="edit-profile-btn" class="edit-profile-btn">Edit Profile</button>
+                    <button id="create-recipe-btn" class="create-recipe-btn">Create Recipe</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preferences section has been removed -->
+        
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <div class="tab active" data-tab="my-recipes">My Recipes</div>
+                <div class="tab" data-tab="favorites">Favorites</div>
+                <div class="tab" data-tab="meal-plans">Meal Plans</div>
+            </div>
+            
+            <div id="my-recipes" class="tab-content active">
+                <h2>My Recipes</h2>
+                <div id="user-recipes">
+                    <p class="loading-message">Loading your recipes...</p>
+                </div>
+            </div>
+            
+            <div id="favorites" class="tab-content">
+                <h2>Favorite Recipes</h2>
+                <div id="favorite-recipes">
+                    <p class="loading-message">Loading your favorites...</p>
+                </div>
+            </div>
+            
+            <div id="meal-plans" class="tab-content">
+                <h2>My Meal Plans</h2>
+                <div id="meal-plans-grid">
+                    <p class="loading-message">Loading your meal plans...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Recspicy Logo">
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="recipes.html">Recipes</a></li>
+                        <li><a href="meal-planner.html">Meal Planner</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Recspicy. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditProfileModal()">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="edit-profile-form" onsubmit="saveProfileChanges(event)">
+                <div class="form-group">
+                    <label for="edit-name">Name</label>
+                    <input type="text" id="edit-name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-bio">Bio</label>
+                    <textarea id="edit-bio" name="bio" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-profile-image">Profile Image</label>
+                    <input type="file" id="edit-profile-image" name="profileImage" accept="image/*" onchange="handleProfileImageChange(event)">
+                    <div class="image-preview-container">
+                        <img id="profile-image-preview" style="display: none; max-width: 100%; max-height: 200px; margin-top: 10px;">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="navigation.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>
