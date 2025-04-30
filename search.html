@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Recipes - Recspicy</title>
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/search.css">
+    <link rel="stylesheet" href="/footer.css">
+</head>
+<body>
+    <nav id="nav-container"></nav>
+
+    <main class="search-container">
+        <section class="search-header">
+            <h1 class="search-title">Search Recipes</h1>
+            <p class="search-subtitle">Find the perfect recipe for any occasion</p>
+        </section>
+
+        <form class="search-form" id="search-form">
+            <div class="search-input-group">
+                <input type="search" 
+                       class="search-input" 
+                       id="search-input"
+                       placeholder="Search by recipe name, ingredients, or cuisine..."
+                       aria-label="Search recipes"
+                       required>
+                <button type="submit" class="search-button">Search</button>
+            </div>
+        </form>
+
+        <section class="filters-section">
+            <h2 class="filters-title">Filters</h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label" for="cuisine-filter">Cuisine Type</label>
+                    <select class="filter-select" id="cuisine-filter">
+                        <option value="">All Cuisines</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Asian">Asian</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                        <option value="Middle Eastern">Middle Eastern</option>
+                        <option value="American">American</option>
+                        <option value="French">French</option>
+                        <option value="Greek">Greek</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="meal-filter">Meal Type</label>
+                    <select class="filter-select" id="meal-filter">
+                        <option value="">All Meals</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="dessert">Dessert</option>
+                        <option value="snack">Snack</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="diet-filter">Dietary Restrictions</label>
+                    <select class="filter-select" id="diet-filter">
+                        <option value="">No Restrictions</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Gluten-Free">Gluten Free</option>
+                        <option value="Dairy-Free">Dairy Free</option>
+                        <option value="Keto">Keto</option>
+                        <option value="Paleo">Paleo</option>
+                        <option value="Low-Carb">Low Carb</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="time-filter">Cooking Time</label>
+                    <select class="filter-select" id="time-filter">
+                        <option value="">Any Time</option>
+                        <option value="15">Under 15 mins</option>
+                        <option value="30">Under 30 mins</option>
+                        <option value="45">Under 45 mins</option>
+                        <option value="60">Under 1 hour</option>
+                        <option value="90">Under 1.5 hours</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Allergen-Free</label>
+                    <div class="allergen-filters">
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="dairy" name="allergens">
+                            Dairy-Free
+                        </label>
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="gluten" name="allergens">
+                            Gluten-Free
+                        </label>
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="nuts" name="allergens">
+                            Nut-Free
+                        </label>
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="eggs" name="allergens">
+                            Egg-Free
+                        </label>
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="soy" name="allergens">
+                            Soy-Free
+                        </label>
+                        <label class="allergen-checkbox">
+                            <input type="checkbox" value="shellfish" name="allergens">
+                            Shellfish-Free
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="results-header">
+                <span class="results-count" id="results-count">0 results found</span>
+                <select class="sort-select" id="sort-select">
+                    <option value="relevance">Sort by Relevance</option>
+                    <option value="rating">Sort by Rating</option>
+                    <option value="time">Sort by Cooking Time</option>
+                </select>
+            </div>
+
+            <div class="results-grid" id="results-grid">
+                <!-- Results will be populated here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <section class="footer-section">
+                    <h3>About Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="landing.html">Landing Page</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Help</h3>
+                    <ul class="footer-links">
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </section>
+                <section class="footer-section">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="copyright.html">Copyright</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/navigation.js"></script>
+    <script type="module" src="/recipeService.js"></script>
+    <script type="module" src="/search.js"></script>
+</body>
+</html>
