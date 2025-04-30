@@ -99,7 +99,7 @@ function initNavigation() {
     
     navItems.forEach(item => {
         const href = item.getAttribute('href');
-        if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+        if (href === currentPage || (currentPage === '' && href === 'home.html')) {
             item.classList.add('active');
         }
     });
@@ -140,7 +140,7 @@ function handleSignOut() {
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('rememberUser');
-    window.location.href = 'landing.html';
+    window.location.href = 'index.html';
 }
 
 function updateNavigation() {

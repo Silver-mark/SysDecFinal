@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recspicy - Discover Delicious Recipes</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="respicy-index.css">
+    <!-- TheMealDB API Integration -->
+    <script src="mealdb-api.js"></script>
+</head>
+<body>
+    <header>
+         <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html" class="active">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    </header>
+
+    <main class="container" role="main">
+        <div class="hero-section">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Recspicy</h1>
+                <p class="hero-subtitle">Discover, create, and share delicious recipes</p>
+            </div>
+        </div>
+
+        <div class="quick-filters">
+            <button class="filter-btn active" data-filter="all">All Recipes</button>
+            <button class="filter-btn" data-filter="quick">Quick & Easy</button>
+            <button class="filter-btn" data-filter="vegetarian">Vegetarian</button>
+            <button class="filter-btn" data-filter="trending">Trending</button>
+            <button class="filter-btn" data-filter="popular">Most Popular</button>
+        </div>
+
+        <div id="recipe-sections">
+            <section class="recipe-section">
+                <h2 class="section-title">Trending Today</h2>
+                <div class="recipe-scroll" id="trending-today"></div>
+            </section>
+
+            <section class="recipe-section">
+                <h2 class="section-title">Check These Out</h2>
+                <div class="recipe-scroll" id="check-these-out"></div>
+            </section>
+
+            <section class="recipe-section">
+                <h2 class="section-title">Recommended For You</h2>
+                <div class="recipe-scroll" id="recommended-for-you"></div>
+            </section>
+        </div>
+    </main>
+
+
+   <!-- Footer -->
+   <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-logo">
+            <img src="logo.png" alt="Recspicy Logo">
+        </div>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Recspicy. All rights reserved.</p>
+    </div>
+</footer>
+
+
+    <script src="navigation.js"></script>
+    <script src="respicy-index.js"></script>
+</body>
+</html>

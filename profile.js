@@ -91,7 +91,6 @@ function displayUserProfile(userData) {
         }
     }
     
-    // We've removed the preferences section code from here
 }
 
 function initializeTabs() {
@@ -527,15 +526,6 @@ function readFileAsDataURL(file) {
     });
 }
 
-// Remove these duplicate functions
-// function showSuccess(message) {
-//     alert(message); // Replace with a nicer notification in production
-// }
-
-// function showError(message) {
-//     alert(message); // Replace with a nicer notification in production
-// }
-
 
 // Add this function to load user recipes
 async function loadUserRecipes() {
@@ -638,29 +628,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserRecipes();
 });
 
-// For testing purposes - simulate authentication
-if (!localStorage.getItem('userId')) {
-    localStorage.setItem('userId', 'user123');
-    localStorage.setItem('authToken', 'mock-token-123');
-    localStorage.setItem('userName', 'John Doe');
-}
-
-// Add this function to directly test the profile update
-function testProfileUpdate() {
-    const userData = {
-        name: document.querySelector('.profile-name').textContent,
-        bio: document.querySelector('.profile-bio').textContent,
-        profileImage: document.querySelector('.profile-avatar').src
-    };
-    
-    // Update UI directly
-    displayUserProfile(userData);
-    
-    // Store in localStorage
-    localStorage.setItem('userName', userData.name);
-    localStorage.setItem('userBio', userData.bio);
-    localStorage.setItem('userProfileImage', userData.profileImage);
-    
-    showSuccess('Profile updated locally (test mode)');
-}
 

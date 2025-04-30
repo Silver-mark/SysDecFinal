@@ -14,11 +14,13 @@ echo.
 
 :: Create basic .env file if it doesn't exist
 if not exist ".env" (
-    echo Creating .env file...
-    echo NODE_ENV=development>>.env
-    echo PORT=5000>>.env
-    echo MONGO_URI=mongodb://localhost:27017/recspicy>>.env
-    echo JWT_SECRET=your_jwt_secret_key_here>>.env
+    echo Creating .env text file...
+    (
+    echo NODE_ENV=development
+    echo PORT=5000
+    echo MONGO_URI=mongodb://localhost:27017/recspicy
+    echo JWT_SECRET=your_jwt_secret_key_here
+    ) > .env
 ) else (
     echo .env file already exists - skipping creation
 )
