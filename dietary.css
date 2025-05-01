@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .dietary-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -185,4 +189,4 @@
         gap: 1rem;
         align-items: flex-start;
     }
-} 
+}

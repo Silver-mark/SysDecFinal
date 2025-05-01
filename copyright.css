@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .copyright-container {
     max-width: 48rem;
     margin: 0 auto;
@@ -81,4 +85,4 @@
 .contact-link:hover {
     color: #2c5282;
     text-decoration: underline;
-} 
+}

@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .feedback-container {
     max-width: 48rem;
     margin: 0 auto;
@@ -124,4 +128,4 @@
 
 .error-message.visible {
     display: block;
-} 
+}

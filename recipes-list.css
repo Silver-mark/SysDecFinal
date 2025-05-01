@@ -1,4 +1,7 @@
 /* Recipes List Page Styles */
+body {
+    background-color: #e6f0ff;
+}
 
 /* Search Container */
 .search-container {

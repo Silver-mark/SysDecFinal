@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .signin-container {
     max-width: 24rem;
     margin: 4rem auto;
@@ -149,4 +153,4 @@
 
 .return-link:hover {
     color: #3b82f6;
-} 
+}

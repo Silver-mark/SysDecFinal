@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .search-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -232,4 +236,4 @@
 
 .allergen-checkbox[for="shellfish"]::before {
     background-image: url('../assets/icons/shellfish.svg');
-} 
+}

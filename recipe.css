@@ -1,4 +1,7 @@
 /* Recipe Page Styles */
+body {
+    background-color: #e6f0ff;
+}
 
 /* Recipe Header */
 .search-title {

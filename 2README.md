@@ -24,17 +24,21 @@ the page needs to filter and search for recipes.
 edit profile needs to save image it saves and dosnt save there is a issue.
 
 ## Profile
-place holders need to be removed on my recipes.
+profile page needs to load user created recipes.
+profile page needs to load user created meal plans.
+profile page needs to load user created favorite recipes.
+profile page needs to load user created favorite meal plans.
 created recipes should be able to be edited or deleted.
 
 ## Meal Planner
-Test meal plan create meal plan to DB,
 attach forgin key to profile.
-display created meal plan.
+display created meal plans.
 allow user to change edit or delete meal plan.
 allow for multiple meal plans.
 
 ## Non Active Pages
+Recipe Search Page
+Admin Page
 
 ## Critical Necessity
 Remake and support admin

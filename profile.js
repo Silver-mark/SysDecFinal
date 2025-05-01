@@ -546,7 +546,7 @@ async function loadUserRecipes() {
             console.error('Error fetching recipes from API:', error);
         }
         
-        // If API fails, use mock data
+        /* If API fails, use mock data
         console.log('Using mock recipe data');
         const mockRecipes = [
             {
@@ -578,7 +578,7 @@ async function loadUserRecipes() {
             }
         ];
         
-        displayUserRecipes(mockRecipes);
+        displayUserRecipes(mockRecipes);*/
     } catch (error) {
         console.error('Error in loadUserRecipes:', error);
     }
