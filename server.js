@@ -29,6 +29,29 @@ app.get('/', (req, res) => {
 });
 
 // User routes
+// Get total user count - MUST come before the :userId route
+app.get('/api/users/count/total', async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ count });
+    } catch (error) {
+        console.error('Error counting users:', error);
+        res.status(500).json({ message: 'Error counting users' });
+    }
+});
+
+// Add this new endpoint for recipe count
+app.get('/api/recipes/count/total', async (req, res) => {
+    try {
+        const Recipe = require('./recipes');
+        const count = await Recipe.countDocuments();
+        res.json({ count });
+    } catch (error) {
+        console.error('Error counting recipes:', error);
+        res.status(500).json({ message: 'Error counting recipes' });
+    }
+});
+
 // Get user by ID
 app.get('/api/users/:userId', async (req, res) => {
     try {
@@ -143,6 +166,67 @@ app.get('/api/recipes/public', getPublicRecipes);
 app.get('/api/recipes/:id', getRecipeById);
 app.put('/api/recipes/:id', updateRecipe);
 app.delete('/api/recipes/:id', deleteRecipe);
+
+// Add these new endpoints for admin dashboard
+const Recipe = require('./recipes');
+
+// Get total recipe count
+app.get('/api/recipes/count/total', async (req, res) => {
+  try {
+    const count = await Recipe.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    console.error('Error counting recipes:', error);
+    res.status(500).json({ message: 'Error counting recipes' });
+  }
+});
+
+// Get dashboard stats
+app.get('/api/admin/dashboard/stats', async (req, res) => {
+  try {
+    // Calculate some basic stats
+    const userCount = await User.countDocuments();
+    const recipeCount = await Recipe.countDocuments();
+    const publicRecipes = await Recipe.countDocuments({ isPublic: true });
+    const privateRecipes = await Recipe.countDocuments({ isPublic: false });
+    
+    res.json({
+      userCount,
+      recipeCount,
+      publicRecipes,
+      privateRecipes,
+      newUsersThisWeek: Math.floor(userCount * 0.15), // Simulated data
+      newRecipesThisWeek: Math.floor(recipeCount * 0.2), // Simulated data
+      activeUsers: Math.floor(userCount * 0.6) // Simulated data
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ message: 'Error fetching dashboard stats' });
+  }
+});
+
+// Get top performing recipes
+app.get('/api/admin/recipes/top', async (req, res) => {
+  try {
+    // Get 5 random recipes for demonstration
+    const recipes = await Recipe.find().limit(5);
+    
+    // Add some simulated metrics
+    const topRecipes = recipes.map(recipe => ({
+      _id: recipe._id,
+      title: recipe.title,
+      views: Math.floor(Math.random() * 1000),
+      favorites: Math.floor(Math.random() * 100),
+      rating: (3 + Math.random() * 2).toFixed(1),
+      createdAt: recipe.createdAt
+    }));
+    
+    res.json(topRecipes);
+  } catch (error) {
+    console.error('Error fetching top recipes:', error);
+    res.status(500).json({ message: 'Error fetching top recipes' });
+  }
+});
 
 // Use existing userController for register and login
 const { registerUser, loginUser } = require('./userController');

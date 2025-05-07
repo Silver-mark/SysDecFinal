@@ -27,10 +27,27 @@ const userSchema = mongoose.Schema(
     },
     // Add profile data field to store extended profile information
     profileData: {
-      type: Object,
+      type: {
+        bio: String,
+        avatar: String,
+        created: [{ type: String }], // Array of recipe IDs
+        mealPlans: [{ type: String }], // Array of meal plan IDs
+        rated: [{ type: String }], // Array of rated recipe IDs
+        favorites: [{ type: String }], // Array of favorite recipe IDs
+        preferences: {
+          cuisines: [{ type: String }],
+          diet: { type: String, default: 'none' },
+          skillLevel: { type: String, default: 'beginner' },
+          cookingTime: { type: String, default: 'any' }
+        }
+      },
       default: {
         bio: '',
         avatar: '',
+        created: ['53062'],
+        mealPlans: ['53062'],
+        rated: ['53062'],
+        favorites: ['53062'],
         preferences: {
           cuisines: [],
           diet: 'none',

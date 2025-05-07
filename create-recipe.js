@@ -134,8 +134,20 @@ async function handleSubmit(event) {
             throw new Error('Failed to create recipe');
         }
 
-        // Redirect to profile page on success
-        window.location.href = 'profile.html';
+        // Get the created recipe ID from response
+        const createdRecipe = await response.json();
+        const recipeId = createdRecipe._id;
+
+        // Show success popup with recipe ID in a more prominent format
+        showSuccess(`Recipe created successfully!\nRecipe ID: ${recipeId}\n\nRedirecting to profile page...`);
+
+        // Update user profile and redirect
+        await updateUserProfileWithRecipe(recipeId);
+
+        // Redirect to profile page after a short delay
+        setTimeout(() => {
+            window.location.href = 'profile.html';
+        }, 2000);
 
     } catch (error) {
         console.error('Error creating recipe:', error);
@@ -183,10 +195,10 @@ function validateRecipe(recipe) {
     return true;
 }
 
-function showError(message) {
-    // Create error notification element
+function showNotification(message, type) {
+    // Create notification element
     const notification = document.createElement('div');
-    notification.className = 'notification error';
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
 
@@ -198,4 +210,35 @@ function showError(message) {
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     }, 10);
+}
+
+function showError(message) {
+    showNotification(message, 'error');
+}
+
+function showSuccess(message) {
+    showNotification(message, 'success');
+}
+
+async function updateUserProfileWithRecipe(recipeId) {
+    try {
+        const userId = localStorage.getItem('userId');
+        const updateResponse = await fetch('/api/users/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId,
+                recipeId
+            })
+        });
+
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update user profile');
+        }
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        showError('Failed to update user profile with recipe');
+    }
 }

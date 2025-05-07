@@ -1,3 +1,7 @@
+body {
+    background-color: #e6f0ff;
+}
+
 .index-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -204,4 +208,4 @@
     .index-stats {
         grid-template-columns: 1fr;
     }
-} 
+}

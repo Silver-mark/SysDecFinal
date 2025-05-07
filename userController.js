@@ -15,12 +15,26 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create user with minimal validation
+    // Create user with minimal validation and initialize arrays
     const user = await User.create({
       name,
       username,
       email,
       password,
+      profileData: {
+        bio: '',
+        avatar: '',
+        created: [],
+        mealPlans: [],
+        rated: [],
+        favorites: [],
+        preferences: {
+          cuisines: [],
+          diet: 'none',
+          skillLevel: 'beginner',
+          cookingTime: 'any'
+        }
+      }
     });
 
     // Return user data with token
@@ -68,18 +82,13 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Get user profile by ID - simplified version
-// @route   GET /api/users/profile/:id
-// @access  Public (for simplicity)
 const getUserProfileById = async (req, res) => {
   try {
     const userId = req.params.id;
     
-    // Simplified profile retrieval by ID
     const user = await User.findById(userId);
     
     if (user) {
-      // Get extended profile data if it exists
       const profileData = user.profileData || {};
       
       res.json({
@@ -89,6 +98,10 @@ const getUserProfileById = async (req, res) => {
         email: user.email,
         bio: profileData.bio || '',
         avatar: profileData.avatar || '',
+        created: profileData.created || [],
+        mealPlans: profileData.mealPlans || [],
+        rated: profileData.rated || [],
+        favorites: profileData.favorites || [],
         preferences: profileData.preferences || {
           cuisines: [],
           diet: 'none',
@@ -105,29 +118,27 @@ const getUserProfileById = async (req, res) => {
   }
 };
 
-// @desc    Update user profile - simplified version
-// @route   POST /api/users/profile
-// @access  Public (for simplicity)
 const updateUserProfile = async (req, res) => {
   try {
-    const { userId, name, bio, avatar, preferences } = req.body;
+    const { userId, name, bio, avatar, created, mealPlans, rated, favorites, preferences } = req.body;
     
-    // Find user by ID
     const user = await User.findById(userId);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Update basic user info
     if (name) user.name = name;
     
-    // Update or create profile data
     user.profileData = {
       ...user.profileData,
-      bio: bio || '',
-      avatar: avatar || '',
-      preferences: preferences || {
+      bio: bio || user.profileData?.bio || '',
+      avatar: avatar || user.profileData?.avatar || '',
+      created: created || user.profileData?.created || [],
+      mealPlans: mealPlans || user.profileData?.mealPlans || [],
+      rated: rated || user.profileData?.rated || [],
+      favorites: favorites || user.profileData?.favorites || [],
+      preferences: preferences || user.profileData?.preferences || {
         cuisines: [],
         diet: 'none',
         skillLevel: 'beginner',
@@ -135,13 +146,16 @@ const updateUserProfile = async (req, res) => {
       }
     };
     
-    // Save updated user
     await user.save();
     
     res.json({
       _id: user._id,
       name: user.name,
       bio: user.profileData.bio,
+      created: user.profileData.created,
+      mealPlans: user.profileData.mealPlans,
+      rated: user.profileData.rated,
+      favorites: user.profileData.favorites,
       success: true
     });
   } catch (error) {

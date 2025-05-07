@@ -1,4 +1,8 @@
 /* Profile Page Styles */
+body {
+    background-color: #e6f0ff;
+}
+
 .profile-container {
     max-width: 1000px;
     margin: 0 auto;

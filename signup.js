@@ -184,4 +184,21 @@ document.addEventListener('DOMContentLoaded', () => {
             errorElement.style.display = 'none';
         }
     }
+    
+    const googleSignUpButton = document.querySelector('.google-signup');
+    if (googleSignUpButton) {
+        googleSignUpButton.addEventListener('click', handleGoogleSignUp);
+    }
 });
+
+async function handleGoogleSignUp() {
+    try {
+        // This would be implemented once Google OAuth is set up
+        console.log('Google sign-up clicked');
+        alert('Google sign-up is not yet implemented');
+    } catch (error) {
+        console.error('Google sign-up error:', error);
+        alert('Google sign-up failed');
+    }
+}
+;

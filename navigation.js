@@ -56,10 +56,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     </div>
                 </div>
+                <div class="user-count" id="user-count">Users: Loading...</div>
             </nav>
         `;
         setupNavigation();
         initNavigation();
+        fetchUserCount(); // Add this line to fetch the user count
     } else {
         // If nav container doesn't exist, just initialize the navigation
         initNavigation();
@@ -99,7 +101,7 @@ function initNavigation() {
     
     navItems.forEach(item => {
         const href = item.getAttribute('href');
-        if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+        if (href === currentPage || (currentPage === '' && href === 'home.html')) {
             item.classList.add('active');
         }
     });
@@ -140,7 +142,7 @@ function handleSignOut() {
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('rememberUser');
-    window.location.href = 'landing.html';
+    window.location.href = 'index.html';
 }
 
 function updateNavigation() {
@@ -185,4 +187,30 @@ function updateNavigation() {
     `;
 
     navContainer.innerHTML = navContent;
+}
+
+// Add this new function to fetch and display the user count
+function fetchUserCount() {
+    fetch('/api/users/count/total')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user count');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const userCountElement = document.getElementById('user-count');
+            if (userCountElement && data.count !== undefined) {
+                userCountElement.textContent = `Users: ${data.count}`;
+            } else {
+                userCountElement.textContent = 'Users: N/A';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user count:', error);
+            const userCountElement = document.getElementById('user-count');
+            if (userCountElement) {
+                userCountElement.textContent = 'Users: Error loading';
+            }
+        });
 }

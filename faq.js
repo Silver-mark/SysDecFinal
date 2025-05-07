@@ -1,34 +1,17 @@
+/**
+ * Toggle FAQ answer visibility and rotate arrow indicator
+ * @param {HTMLElement} button - The FAQ question button that was clicked
+ */
 function toggleFAQ(button) {
+    // Find the answer element (next sibling after the button)
     const answer = button.nextElementSibling;
+    
+    // Find the arrow element inside the button
     const arrow = button.querySelector('.question-arrow');
+    
+    // Toggle the visibility class on the answer
     answer.classList.toggle('visible');
+    
+    // Toggle the rotated class on the arrow
     arrow.classList.toggle('rotated');
-    const allAnswers = document.querySelectorAll('.faq-answer');
-    const allArrows = document.querySelectorAll('.question-arrow');
-    
-    allAnswers.forEach(item => 
-	{
-        if (item !== answer && item.classList.contains('visible')) 
-		{
-            item.classList.remove('visible');
-        }
-    });
-    
-    allArrows.forEach(item => {
-        if (item !== arrow && item.classList.contains('rotated')) 
-		{
-            item.classList.remove('rotated');
-        }
-    });
 }
-
-document.addEventListener('keydown', (e) => 
-{
-    if (e.key === 'Escape') {
-        const visibleAnswers = document.querySelectorAll('.faq-answer.visible');
-        const rotatedArrows = document.querySelectorAll('.question-arrow.rotated');
-        
-        visibleAnswers.forEach(answer => answer.classList.remove('visible'));
-        rotatedArrows.forEach(arrow => arrow.classList.remove('rotated'));
-    }
-}); 

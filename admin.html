@@ -7,10 +7,37 @@
     <title>Admin Dashboard - Recspicy</title>
     <link rel="stylesheet" href="/navigation.css">
     <link rel="stylesheet" href="/admin.css">
+    <link rel="stylesheet" href="/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <nav id="nav-container"></nav>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="admin.html" class="profile-link active">Admin</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
     <div id="loading-spinner">
         <div class="spinner"></div>
     </div>
@@ -73,20 +100,22 @@
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value" id="total-users">--</div>
-                        <div class="stat-label">Total Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value" id="total-users">0</h3>
+                            <p class="stat-label">Total Users</p>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="total-recipes">--</div>
-                        <div class="stat-label">Total Recipes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="recipes-this-month">--</div>
-                        <div class="stat-label">New Recipes (This Month)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="active-users">--</div>
-                        <div class="stat-label">Active Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value" id="total-recipes">0</h3>
+                            <p class="stat-label">Total Recipes</p>
+                        </div>
                     </div>
                 </div>
                 
@@ -194,5 +223,36 @@
 
     <script src="/navigation.js"></script>
     <script type="module" src="/admin.js"></script>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Recspicy Logo">
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="recipes-list.html">Recipes</a></li>
+                        <li><a href="meal-planner.html">Meal Planner</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Recspicy. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

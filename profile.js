@@ -91,7 +91,6 @@ function displayUserProfile(userData) {
         }
     }
     
-    // We've removed the preferences section code from here
 }
 
 function initializeTabs() {
@@ -329,13 +328,25 @@ async function saveProfileChanges(event) {
         profileImage = existingImage ? existingImage.src : 'https://via.placeholder.com/150?text=Profile';
     }
     
+    // Get existing data from localStorage or use empty arrays as fallback
+    const existingProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    
     // Prepare data for API
     const userData = {
         userId,
         name,
         bio,
         avatar: profileImage,
-        preferences: {}
+        created: existingProfile.created || [], // Preserve existing data
+        mealPlans: existingProfile.mealPlans || [], // Preserve existing data
+        rated: existingProfile.rated || [], // Preserve existing data
+        favorites: existingProfile.favorites || [], // Preserve existing data
+        preferences: existingProfile.preferences || {
+            cuisines: [],
+            diet: 'none',
+            skillLevel: 'beginner',
+            cookingTime: 'any'
+        }
     };
     
     console.log('Sending profile update:', userData);
@@ -527,15 +538,6 @@ function readFileAsDataURL(file) {
     });
 }
 
-// Remove these duplicate functions
-// function showSuccess(message) {
-//     alert(message); // Replace with a nicer notification in production
-// }
-
-// function showError(message) {
-//     alert(message); // Replace with a nicer notification in production
-// }
-
 
 // Add this function to load user recipes
 async function loadUserRecipes() {
@@ -556,7 +558,7 @@ async function loadUserRecipes() {
             console.error('Error fetching recipes from API:', error);
         }
         
-        // If API fails, use mock data
+        /* If API fails, use mock data
         console.log('Using mock recipe data');
         const mockRecipes = [
             {
@@ -588,7 +590,7 @@ async function loadUserRecipes() {
             }
         ];
         
-        displayUserRecipes(mockRecipes);
+        displayUserRecipes(mockRecipes);*/
     } catch (error) {
         console.error('Error in loadUserRecipes:', error);
     }
@@ -638,29 +640,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserRecipes();
 });
 
-// For testing purposes - simulate authentication
-if (!localStorage.getItem('userId')) {
-    localStorage.setItem('userId', 'user123');
-    localStorage.setItem('authToken', 'mock-token-123');
-    localStorage.setItem('userName', 'John Doe');
-}
-
-// Add this function to directly test the profile update
-function testProfileUpdate() {
-    const userData = {
-        name: document.querySelector('.profile-name').textContent,
-        bio: document.querySelector('.profile-bio').textContent,
-        profileImage: document.querySelector('.profile-avatar').src
-    };
-    
-    // Update UI directly
-    displayUserProfile(userData);
-    
-    // Store in localStorage
-    localStorage.setItem('userName', userData.name);
-    localStorage.setItem('userBio', userData.bio);
-    localStorage.setItem('userProfileImage', userData.profileImage);
-    
-    showSuccess('Profile updated locally (test mode)');
-}
 
