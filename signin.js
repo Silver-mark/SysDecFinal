@@ -19,6 +19,18 @@ async function handleSignIn(event) {
         showError('Please fill in all fields');
         return;
     }
+
+    // Check for admin login
+    if (userInput === 'admin' && password === 'admin') {
+        console.log('Admin login successful');
+        localStorage.setItem('userId', 'admin');
+        localStorage.setItem('userName', 'Administrator');
+        localStorage.setItem('username', 'admin');
+        localStorage.setItem('authToken', 'admin-token');
+        localStorage.setItem('isAdmin', 'true');
+        window.location.href = 'admin.html';
+        return;
+    }
     
     try {
         console.log('Sending login request...');
@@ -44,6 +56,7 @@ async function handleSignIn(event) {
         // Store user data in localStorage
         localStorage.setItem('userId', userData._id);
         localStorage.setItem('userName', userData.name);
+        localStorage.setItem('username', userData.username); // Add this line
         localStorage.setItem('authToken', userData.token || 'dummy-token');
         
         console.log('Redirecting to profile page...');

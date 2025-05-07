@@ -1,6 +1,3 @@
-import { getAllRecipes } from './recipeService.js';
-import { searchLocalRecipes } from './recipeDBService.js';
-
 let currentResults = [];
 let currentSort = 'relevance';
 
@@ -35,22 +32,32 @@ function displayResults(recipes) {
     resultsGrid.innerHTML = '';
     currentResults = recipes;
 
+    if (recipes.length === 0) {
+        resultsGrid.innerHTML = `
+            <div class="no-results">
+                <h3>No recipes found</h3>
+                <p>Try adjusting your search terms or filters</p>
+            </div>
+        `;
+        return;
+    }
+
     recipes.forEach(recipe => {
         const card = document.createElement('div');
         card.className = 'recipe-card';
         card.innerHTML = `
             <div class="recipe-image">
-                <img src="${recipe.image || '../images/default-recipe.jpg'}" alt="${recipe.title}">
-                ${recipe.source === 'local' ? '<span class="source-badge local">Local</span>' : '<span class="source-badge external">External</span>'}
+                <img src="${recipe.image || '../LOGO/recipe-placeholder.svg'}" alt="${recipe.title}">
             </div>
             <div class="recipe-content">
                 <h3>${recipe.title}</h3>
                 <p>${recipe.description || 'No description available'}</p>
                 <div class="recipe-meta">
-                    <span><i class="far fa-clock"></i> ${recipe.cookTime + recipe.prepTime || 0} mins</span>
-                    <span><i class="fas fa-utensils"></i> ${recipe.difficulty || 'Easy'}</span>
+                    <span><i class="meta-icon">⏱️</i> ${recipe.cookTime || 0} mins</span>
+                    <span><i class="meta-icon">👨‍🍳</i> ${recipe.difficulty || 'Easy'}</span>
+                    ${recipe.rating ? `<span><i class="meta-icon">⭐</i> ${recipe.rating}</span>` : ''}
                 </div>
-                ${recipe.dietaryCategories ? `
+                ${recipe.dietaryCategories && recipe.dietaryCategories.length > 0 ? `
                     <div class="dietary-tags">
                         ${recipe.dietaryCategories.map(tag => `<span class="tag">${tag}</span>`).join('')}
                     </div>
@@ -59,7 +66,7 @@ function displayResults(recipes) {
         `;
 
         card.addEventListener('click', () => {
-            window.location.href = `/pages/recipe.html?id=${recipe.id}&source=${recipe.source}`;
+            window.location.href = `recipe.html?id=${recipe.id}`;
         });
 
         resultsGrid.appendChild(card);
@@ -68,162 +75,197 @@ function displayResults(recipes) {
     resultsCount.textContent = `Found ${recipes.length} recipes`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input');
-    const resultsGrid = document.getElementById('results-grid');
-    const resultsCount = document.getElementById('results-count');
-    const sortSelect = document.getElementById('sort-select');
-    const filters = {
-        cuisineFilter: document.getElementById('cuisine-filter'),
-        mealFilter: document.getElementById('meal-filter'),
-        dietFilter: document.getElementById('diet-filter'),
-        timeFilter: document.getElementById('time-filter'),
-        allergenInputs: document.querySelectorAll('input[name="allergens"]')
-    };
-	
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('q')) {
-        searchInput.value = urlParams.get('q');
-        performSearch();
-    } else {
-        loadRecentRecipes();
-    }
-
-    searchForm.addEventListener('submit', (e) => {
+function setupEventListeners() {
+    const { form, sortSelect, filters } = window.searchComponents;
+    
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         performSearch();
     });
     
-    sortSelect.addEventListener('change', () => {
-        sortResults();
-    });
-    filters.cuisineFilter.addEventListener('change', performSearch);
-    filters.mealFilter.addEventListener('change', performSearch);
-    filters.dietFilter.addEventListener('change', performSearch);
-    filters.timeFilter.addEventListener('change', performSearch);
+    sortSelect.addEventListener('change', sortResults);
     
-    filters.allergenInputs.forEach(input => {
-        input.addEventListener('change', performSearch);
-    });
+    // Add event listeners to filter elements
+    if (filters.cuisine) filters.cuisine.addEventListener('change', performSearch);
+    if (filters.meal) filters.meal.addEventListener('change', performSearch);
+    if (filters.diet) filters.diet.addEventListener('change', performSearch);
+    if (filters.time) filters.time.addEventListener('change', performSearch);
     
-    async function loadRecentRecipes() {
-        try {
-            const result = await getAllRecipes({ sort: 'latest', limit: 12 });
-            
-            if (result.success) {
-                displayResults(result.recipes);
-                resultsCount.textContent = `Showing ${result.recipes.length} recent recipes`;
-            } else {
-                showError('Failed to load recipes');
-            }
-        } catch (error) {
-            console.error('Error loading recipes:', error);
-            showError('Could not connect to recipe service');
-        }
+    if (filters.allergens) {
+        filters.allergens.forEach(input => {
+            input.addEventListener('change', performSearch);
+        });
     }
+}
 
-    async function performSearch() {
-        const { input: searchInput } = window.searchComponents;
-        const searchAttempts = parseInt(localStorage.getItem('searchAttempts') || 0);
-        
-        if(searchAttempts > 10) {
-            showError('Search rate limit exceeded - please try again later');
-            return;
-        }
-        
-        localStorage.setItem('searchAttempts', searchAttempts + 1);
-        const query = searchInput.value.trim().replace(/[<>"'%;()&+]/g, '');
-        
-        if(query.length > 100 || query.match(/\b(ALTER|CREATE|DELETE|DROP|EXEC|INSERT|SELECT|UPDATE|UNION)\b/i)) {
-            showError('Invalid search query');
-            return;
-        }
+function handleInitialSearch() {
+    const { input } = window.searchComponents;
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('q')) {
+        input.value = urlParams.get('q');
+        performSearch();
+    } else {
+        loadRecentRecipes();
+    }
+}
+
+async function loadRecentRecipes() {
+    try {
         showLoading();
+        // Use trending recipes from MealDB as recent recipes
+        const recipes = await fetchTrendingRecipes();
+        hideLoading();
         
-        try {
-            const filters = getFilters();
-            const [localResults, externalResults] = await Promise.all([
-                searchLocalRecipes(query),
-                getAllRecipes({ ...filters, query })
-            ]);
-
-            const combinedResults = [];
-            const seenIds = new Set();
-
-            // Add local results first
-            if (localResults.success && localResults.recipes) {
-                localResults.recipes.forEach(recipe => {
-                    if (!seenIds.has(recipe.id)) {
-                        combinedResults.push({ ...recipe, source: 'local' });
-                        seenIds.add(recipe.id);
-                    }
-                });
-            }
-
-            // Add external results
-            if (externalResults.success && externalResults.recipes) {
-                externalResults.recipes.forEach(recipe => {
-                    if (!seenIds.has(recipe.id)) {
-                        combinedResults.push({ ...recipe, source: 'external' });
-                        seenIds.add(recipe.id);
-                    }
-                });
-            }
-
-            hideLoading();
-            displayResults(combinedResults);
-            
-        } catch (error) {
-            console.error('Search error:', error);
-            hideLoading();
-            showError('Failed to search recipes');
+        if (recipes && recipes.length > 0) {
+            displayResults(recipes);
+            const resultsCount = document.getElementById('results-count');
+            resultsCount.textContent = `Showing ${recipes.length} trending recipes`;
+        } else {
+            showError('No recipes found');
         }
-        
-        if (!query && !hasActiveFilters()) {
-            loadRecentRecipes();
-            return;
-        }
-        
-        try {
-            const filterParams = {
-                query: query,
-                cuisineType: filters.cuisineFilter.value,
-                category: filters.mealFilter.value,
-                dietary: filters.dietFilter.value,
-                cookTime: filters.timeFilter.value,
-                allergens: getSelectedAllergens()
-            };
-			
-            Object.keys(filterParams).forEach(key => {
-                if (!filterParams[key] || 
-                    (Array.isArray(filterParams[key]) && filterParams[key].length === 0)) {
-                    delete filterParams[key];
-                }
-            });
-            const result = await getAllRecipes(filterParams);
-            
-            if (result.success) {
-                displayResults(result.recipes);
-            } else {
-                showError(result.message || 'Failed to search recipes');
-            }
-        } catch (error) {
-            console.error('Search error:', error);
-            showError('Failed to perform search. Please try again.');
-        }
+    } catch (error) {
+        console.error('Error loading recipes:', error);
+        hideLoading();
+        showError('Could not connect to recipe service');
+    }
+}
+
+async function performSearch() {
+    const { input: searchInput } = window.searchComponents;
+    const query = searchInput.value.trim().replace(/[<>"'%;()&+]/g, '');
+    
+    if (query.length > 100) {
+        showError('Search query too long');
+        return;
     }
     
-    function hasActiveFilters() {
-        const { filters } = window.searchComponents;
-        return (
-            filters.cuisine.value !== '' ||
-            filters.meal.value !== '' ||
-            filters.diet.value !== '' ||
-            filters.time.value !== '' ||
-            Array.from(filters.allergens).some(input => input.checked)
-        );
+    showLoading();
+    
+    try {
+        // Use MealDB search function
+        const recipes = await searchRecipes(query);
+        
+        // Apply filters to the results
+        const filteredRecipes = applyFilters(recipes);
+        
+        hideLoading();
+        displayResults(filteredRecipes);
+        
+        // Update URL with search query
+        const url = new URL(window.location);
+        url.searchParams.set('q', query);
+        window.history.pushState({}, '', url);
+    } catch (error) {
+        console.error('Search error:', error);
+        hideLoading();
+        showError('Failed to search recipes');
     }
+}
+
+function applyFilters(recipes) {
+    const { filters } = window.searchComponents;
+    
+    return recipes.filter(recipe => {
+        // Apply category filter (previously cuisine filter)
+        if (filters.cuisine && filters.cuisine.value && 
+            recipe.strCategory && 
+            recipe.strCategory.toLowerCase() !== filters.cuisine.value.toLowerCase()) {
+            return false;
+        }
+        
+        // Apply meal type filter
+        if (filters.meal && filters.meal.value && 
+            recipe.strCategory && 
+            recipe.strCategory.toLowerCase() !== filters.meal.value.toLowerCase()) {
+            return false;
+        }
+        
+        // Apply dietary filter
+        if (filters.diet && filters.diet.value && 
+            (!recipe.dietaryCategories || 
+             !recipe.dietaryCategories.some(cat => cat.toLowerCase() === filters.diet.value.toLowerCase()))) {
+            return false;
+        }
+        
+        // Apply cooking time filter
+        if (filters.time && filters.time.value) {
+            const maxTime = parseInt(filters.time.value);
+            if (!isNaN(maxTime) && recipe.cookTime > maxTime) {
+                return false;
+            }
+        }
+        
+        // Apply allergen filters
+        if (filters.allergens) {
+            const selectedAllergens = Array.from(filters.allergens)
+                .filter(input => input.checked)
+                .map(input => input.value.toLowerCase());
+            
+            if (selectedAllergens.length > 0 && recipe.ingredients) {
+                for (const allergen of selectedAllergens) {
+                    if (recipe.ingredients.some(ing => 
+                        ing.name.toLowerCase().includes(allergen))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
+    });
+}
+
+function sortResults() {
+    const { sortSelect } = window.searchComponents;
+    const sortBy = sortSelect.value;
+    
+    if (currentResults.length === 0) return;
+    
+    let sortedResults = [...currentResults];
+    
+    switch (sortBy) {
+        case 'rating':
+            sortedResults.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
+            break;
+        case 'time':
+            sortedResults.sort((a, b) => (a.cookTime || 999) - (b.cookTime || 999));
+            break;
+        // Default is relevance, which is the original order
+    }
+    
+    displayResults(sortedResults);
+}
+
+function showLoading() {
+    const resultsGrid = document.getElementById('results-grid');
+    resultsGrid.innerHTML = '<div class="loading-spinner">Loading recipes...</div>';
+}
+
+function hideLoading() {
+    // Loading is hidden when results are displayed
+}
+
+function showError(message) {
+    const resultsGrid = document.getElementById('results-grid');
+    resultsGrid.innerHTML = `
+        <div class="no-results">
+            <h3>Error</h3>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+function hasActiveFilters() {
+    const { filters } = window.searchComponents;
+    return (
+        (filters.cuisine && filters.cuisine.value !== '') ||
+        (filters.meal && filters.meal.value !== '') ||
+        (filters.diet && filters.diet.value !== '') ||
+        (filters.time && filters.time.value !== '') ||
+        (filters.allergens && Array.from(filters.allergens).some(input => input.checked))
+    );
+}
     
     function displayResults(recipes) {
         hideLoading();
@@ -329,4 +371,4 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-});
+;

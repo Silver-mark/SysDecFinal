@@ -1,10 +1,22 @@
 # This is Whats Left
 
+## Critical Necessity
+Remake and support admin
+Create Email 
+attach email to admin
+
+## Non Active Pages
+Recipe Search Page
+Admin Page
+
+## Recipe Search Page
+browse recipe needs to load recipe cards from the database.
+the page needs to filter and search for recipes.
+
 ## Sign in Sign up 
 sign in sign up need google functionality.
 
 ## Create Recipe
-Create recipe saves to DB, 
 Dosnt attach forgin key to profile.
 dosnt display created recipe.
 dosnt share public recipe.
@@ -16,9 +28,6 @@ this needs to save as refrence in database and display on profile page.
 save recipe can be removed favorite is working as that 
 print is good and set. copy dosnt copy page content but can be removed your choice there.
 
-## Recipe Search Page
-browse recipe needs to load recipe cards from the database.
-the page needs to filter and search for recipes.
 
 ## Edit Profile
 edit profile needs to save image it saves and dosnt save there is a issue.
@@ -36,12 +45,4 @@ display created meal plans.
 allow user to change edit or delete meal plan.
 allow for multiple meal plans.
 
-## Non Active Pages
-Recipe Search Page
-Admin Page
 
-## Critical Necessity
-Remake and support admin
-hardcode admin
-Create Email 
-attach email to admin

@@ -328,13 +328,25 @@ async function saveProfileChanges(event) {
         profileImage = existingImage ? existingImage.src : 'https://via.placeholder.com/150?text=Profile';
     }
     
+    // Get existing data from localStorage or use empty arrays as fallback
+    const existingProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    
     // Prepare data for API
     const userData = {
         userId,
         name,
         bio,
         avatar: profileImage,
-        preferences: {}
+        created: existingProfile.created || [], // Preserve existing data
+        mealPlans: existingProfile.mealPlans || [], // Preserve existing data
+        rated: existingProfile.rated || [], // Preserve existing data
+        favorites: existingProfile.favorites || [], // Preserve existing data
+        preferences: existingProfile.preferences || {
+            cuisines: [],
+            diet: 'none',
+            skillLevel: 'beginner',
+            cookingTime: 'any'
+        }
     };
     
     console.log('Sending profile update:', userData);

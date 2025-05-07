@@ -262,3 +262,13 @@ body {
     border-radius: 0.375rem;
     min-width: 150px;
 }
+
+/* Footer adjustments for admin page */
+.admin-container {
+    min-height: calc(100vh - 300px); /* Adjust based on your footer height */
+    display: flex;
+}
+
+.footer {
+    margin-top: 2rem;
+}
