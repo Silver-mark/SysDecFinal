@@ -29,3 +29,7 @@ npm run dev
 - Signup: http://localhost:5000/signup.html
 - Signin: http://localhost:5000/signin.html
 - Home: http://localhost:5000/landing.html
+
+MongoDB Atlas:
+Sfoste14
+5vjyP1Dal3pQBYYL

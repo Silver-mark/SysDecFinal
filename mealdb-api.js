@@ -47,7 +47,7 @@ async function fetchTrendingRecipes() {
 async function fetchFeaturedRecipes() {
     try {
         // Using category filter for featured recipes (e.g., Seafood)
-        const response = await fetch(`${API_BASE_URL}/filter.php?c=Desert`);
+        const response = await fetch(`${API_BASE_URL}/filter.php?c=Dessert`);
         if (!response.ok) {
             throw new Error('Failed to fetch featured recipes');
         }
