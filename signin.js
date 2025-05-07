@@ -6,7 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error('Sign-in form not found');
     }
+    
+    const googleSignInButton = document.querySelector('.google-signin');
+    if (googleSignInButton) {
+        googleSignInButton.addEventListener('click', handleGoogleSignIn);
+    }
 });
+
+async function handleGoogleSignIn() {
+    try {
+        // This would be implemented once Google OAuth is set up
+        console.log('Google sign-in clicked');
+        alert('Google sign-in is not yet implemented');
+    } catch (error) {
+        console.error('Google sign-in error:', error);
+        showError('Google sign-in failed');
+    }
+}
 
 async function handleSignIn(event) {
     event.preventDefault();
@@ -21,12 +37,14 @@ async function handleSignIn(event) {
     }
 
     // Check for admin login
-    if (userInput === 'admin' && password === 'admin') {
+    if (userInput === 'admin' && password === 'admin1') {
         console.log('Admin login successful');
         localStorage.setItem('userId', 'admin');
         localStorage.setItem('userName', 'Administrator');
         localStorage.setItem('username', 'admin');
         localStorage.setItem('authToken', 'admin-token');
+        localStorage.setItem('adminToken', 'admin-token'); // Add this line
+        localStorage.setItem('userRole', 'admin'); // Add this line
         localStorage.setItem('isAdmin', 'true');
         window.location.href = 'admin.html';
         return;

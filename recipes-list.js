@@ -26,24 +26,31 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Fetch recipes from the server
      */
-    function fetchRecipes() {
+    async function fetchRecipes() {
         // Show loading state
         recipesContainer.innerHTML = '<div class="loading-spinner"></div>';
         
-        fetch('/api/recipes/public')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to load recipes');
-                }
-                return response.json();
-            })
-            .then(recipes => {
-                allRecipes = recipes;
-                applyFiltersAndSort();
-            })
-            .catch(error => {
-                showError('Error loading recipes: ' + error.message);
-            });
+        try {
+            let recipes = [];
+            if (currentSearch) {
+                // Use search endpoint if there's a search query
+                recipes = await searchRecipes(currentSearch);
+            } else if (currentFilter === 'all') {
+                // Get a mix of recipes for "all" filter
+                const trending = await fetchTrendingRecipes();
+                const featured = await fetchFeaturedRecipes();
+                const recommended = await fetchRecommendedRecipes();
+                recipes = [...trending, ...featured, ...recommended];
+            } else {
+                // Get recipes by category for other filters
+                recipes = await getRecipesByCategory(currentFilter);
+            }
+            
+            allRecipes = recipes;
+            applyFiltersAndSort();
+        } catch (error) {
+            showError('Error loading recipes: ' + error.message);
+        }
     }
     
     /**
@@ -60,14 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Apply category filter
             if (currentFilter === 'all') {
                 return true;
-            } else if (currentFilter === 'easy' || currentFilter === 'medium' || currentFilter === 'hard') {
-                return recipe.difficulty === currentFilter;
-            } else if (currentFilter === 'quick') {
-                return recipe.cookingTime <= 30;
-            } else if (currentFilter === 'vegetarian') {
-                // This is a mock filter since we don't have a vegetarian flag
-                // In a real app, you would have a proper vegetarian flag
-                return recipe.cuisine === 'vegetarian';
+            } else {
+                return recipe.strCategory === currentFilter;
             }
             
             return true;
@@ -104,35 +105,48 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear container
         recipesContainer.innerHTML = '';
         
-        // Calculate pagination
+        // Get recipes for current page
         const startIndex = (currentPage - 1) * recipesPerPage;
         const endIndex = startIndex + recipesPerPage;
         const recipesToShow = filteredRecipes.slice(startIndex, endIndex);
         
-        // Show message if no recipes
-        if (recipesToShow.length === 0) {
-            recipesContainer.innerHTML = `
-                <div class="no-results">
-                    <h3>No recipes found</h3>
-                    <p>Try adjusting your search or filters</p>
+        // Create and append recipe cards
+        recipesToShow.forEach(recipe => {
+            const card = document.createElement('div');
+            card.className = 'recipe-card';
+            card.innerHTML = `
+                <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
+                <div class="recipe-content">
+                    <h3 class="recipe-title">${recipe.title}</h3>
+                    <div class="recipe-meta">
+                        <div class="recipe-stats">
+                            <span class="stat-item">
+                                <i class="stat-icon">⏱️</i>
+                                ${recipe.cookTime || '30'} mins
+                            </span>
+                            <span class="stat-item">
+                                <i class="stat-icon">👨‍🍳</i>
+                                ${recipe.difficulty || 'Easy'}
+                            </span>
+                            <span class="stat-item">
+                                <i class="stat-icon">⭐</i>
+                                ${recipe.rating || '4.5'}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             `;
-            loadMoreBtn.style.display = 'none';
-            return;
-        }
-        
-        // Create recipe cards
-        recipesToShow.forEach(recipe => {
-            const recipeCard = createRecipeCard(recipe);
-            recipesContainer.appendChild(recipeCard);
+            
+            // Add click handler
+            card.addEventListener('click', () => {
+                window.location.href = `recipes.html?id=${recipe.id}`; // Changed from recipe.html to recipes.html
+            });
+            
+            recipesContainer.appendChild(card);
         });
         
-        // Show/hide load more button
-        if (endIndex < filteredRecipes.length) {
-            loadMoreBtn.style.display = 'block';
-        } else {
-            loadMoreBtn.style.display = 'none';
-        }
+        // Update load more button visibility
+        loadMoreBtn.style.display = endIndex >= filteredRecipes.length ? 'none' : 'block';
     }
     
     /**
@@ -177,24 +191,39 @@ document.addEventListener('DOMContentLoaded', function() {
      * Set up event listeners
      */
     function setupEventListeners() {
-        // Search input
+        // Search input with debounce
+        let searchTimeout;
         searchInput.addEventListener('input', function() {
-            currentSearch = this.value.trim();
-            applyFiltersAndSort();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentSearch = this.value.trim();
+                fetchRecipes();
+            }, 500);
         });
         
         // Filter buttons
         filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', async function() {
                 // Remove active class from all buttons
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 
                 // Add active class to clicked button
                 this.classList.add('active');
                 
-                // Update filter
-                currentFilter = this.dataset.filter;
-                applyFiltersAndSort();
+                // Update filter and search with the filter text
+                currentFilter = 'all'; // Reset the filter since we're using search
+                currentSearch = this.dataset.filter; // Use the filter value as search term
+                
+                // Don't search if it's the "all" button
+                if (currentSearch === 'all') {
+                    currentSearch = '';
+                }
+                
+                // Clear the search input
+                searchInput.value = '';
+                
+                // Fetch recipes with the new search term
+                fetchRecipes();
             });
         });
         
