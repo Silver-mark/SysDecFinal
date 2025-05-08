@@ -2,6 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const mealPlanForm = document.getElementById('meal-plan-form');
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
 
+    // Check if user is logged in
+    if (!localStorage.getItem('userId')) {
+        alert('Please log in to create a meal plan');
+        window.location.href = 'signin.html?redirect=meal-planner.html';
+        return;
+    }
+
     // Add ingredient button functionality
     days.forEach(day => {
         const addButton = document.querySelector(`[data-day="${day}"]`);
@@ -40,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mealPlanData = {
             planName: formData.get('planName'),
             description: formData.get('description'),
+            userId: localStorage.getItem('userId'),
             days: {}
         };
 
@@ -57,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/meal-plans', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                 },
                 body: JSON.stringify(mealPlanData)
             });

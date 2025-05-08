@@ -640,4 +640,126 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserRecipes();
 });
 
+// Load meal plans for the user
+async function loadMealPlans() {
+    try {
+        const userId = localStorage.getItem('userId');
+        const authToken = localStorage.getItem('authToken');
+        
+        if (!userId || !authToken) {
+            return;
+        }
+        
+        const mealPlansContainer = document.getElementById('mealplans');
+        if (!mealPlansContainer) return;
+        
+        mealPlansContainer.innerHTML = '<div class="loading">Loading meal plans...</div>';
+        
+        const response = await fetch(`/api/meal-plans/user/${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch meal plans');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success || !data.mealPlans || data.mealPlans.length === 0) {
+            mealPlansContainer.innerHTML = `
+                <div class="empty-state">
+                    <p>You haven't created any meal plans yet.</p>
+                    <a href="meal-planner.html" class="btn primary-btn">Create Meal Plan</a>
+                </div>
+            `;
+            return;
+        }
+        
+        // Display meal plans
+        let html = `
+            <div class="section-header">
+                <h2>Your Meal Plans</h2>
+                <a href="meal-planner.html" class="btn primary-btn">Create New Plan</a>
+            </div>
+            <div class="meal-plans-grid">
+        `;
+        
+        data.mealPlans.forEach(plan => {
+            const date = new Date(plan.createdAt).toLocaleDateString();
+            
+            html += `
+                <div class="meal-plan-card">
+                    <h3 class="meal-plan-title">${plan.planName}</h3>
+                    <p class="meal-plan-description">${plan.description || 'No description'}</p>
+                    <div class="meal-plan-meta">
+                        <span class="meal-plan-date">Created: ${date}</span>
+                    </div>
+                    <div class="meal-plan-actions">
+                        <button class="btn view-btn" onclick="viewMealPlan('${plan._id}')">View Plan</button>
+                        <button class="btn delete-btn" onclick="deleteMealPlan('${plan._id}')">Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        mealPlansContainer.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading meal plans:', error);
+        const mealPlansContainer = document.getElementById('mealplans');
+        if (mealPlansContainer) {
+            mealPlansContainer.innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load meal plans. Please try again later.</p>
+                </div>
+            `;
+        }
+    }
+}
+
+// View a specific meal plan
+function viewMealPlan(planId) {
+    window.location.href = `meal-plan-view.html?id=${planId}`;
+}
+
+// Delete a meal plan
+async function deleteMealPlan(planId) {
+    if (!confirm('Are you sure you want to delete this meal plan?')) {
+        return;
+    }
+    
+    try {
+        const userId = localStorage.getItem('userId');
+        const authToken = localStorage.getItem('authToken');
+        
+        if (!userId || !authToken) {
+            alert('You must be logged in to delete a meal plan');
+            return;
+        }
+        
+        const response = await fetch(`/api/meal-plans/${planId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ userId })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to delete meal plan');
+        }
+        
+        alert('Meal plan deleted successfully');
+        loadMealPlans(); // Reload the meal plans
+        
+    } catch (error) {
+        console.error('Error deleting meal plan:', error);
+        alert('Failed to delete meal plan. Please try again.');
+    }
+}
+
 
