@@ -1,12 +1,17 @@
 # This is Whats Left
 
+Remove all refrences to landing.html
+Logo needs to be ajusted on header bar
+get rid of cook times, ratings and servings from api recipie cards
+update all heeaders and footers to match home
+profile image lost?
+change contact us sumbit button to act as mailto with a filled in form
+
 ## Critical Necessity
 Remake and support admin
 Create Email 
 attach email to admin
 
-## Non Active Pages
-Admin Page
 
 ## Sign in Sign up 
 To fully implement Google authentication, you would need to:

@@ -1,11 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (!localStorage.getItem('authToken')) {
+    console.log('Profile page loaded');
+    
+    // Check if user is logged in
+    if (!localStorage.getItem('userId') || !localStorage.getItem('authToken')) {
+        console.log('No user ID found, redirecting to signin');
         window.location.href = 'signin.html';
         return;
     }
 
+    // Initialize navigation (if not already handled in navigation.js)
+    if (typeof initNavigation === 'function') {
+        initNavigation();
+    }
+
     loadUserProfile();
     initializeTabs();
+    setupProfileEditButton();
+    setupCreateRecipeButton();
     loadInitialTab();
 });
 
@@ -39,6 +50,19 @@ function activateTab(selectedTab, tabName) {
     if (tabContent) {
         tabContent.classList.add('active');
         loadTabContent(tabName);
+    }
+}
+
+
+function loadInitialTab() {
+    // Get the active tab and load its content
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) {
+        const tabName = activeTab.dataset.tab;
+        loadTabContent(tabName);
+    } else {
+        // Default to my-recipes if no tab is active
+        loadUserRecipes();
     }
 }
 
@@ -590,40 +614,136 @@ async function loadUserRecipes() {
             }
         ];
         
-        displayUserRecipes(mockRecipes);*/
+        displayUserRecipes(mockRecipes);
+        */
     } catch (error) {
         console.error('Error in loadUserRecipes:', error);
     }
 }
 
-function displayUserRecipes(recipes) {
-    const recipesContainer = document.getElementById('user-recipes');
-    if (!recipesContainer) return;
+function loadTabContent(tabName) {
+    console.log(`Loading content for tab: ${tabName}`);
     
-    if (recipes.length === 0) {
-        recipesContainer.innerHTML = '<p class="no-recipes">You haven\'t created any recipes yet.</p>';
+    if (tabName === 'my-recipes') {
+        loadUserRecipes();
+    } else if (tabName === 'favorites') {
+        loadFavorites();
+    } else if (tabName === 'meal-plans') {
+        loadMealPlans();
+    }
+}
+
+function loadUserRecipes() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        console.error('No user ID found');
         return;
     }
     
-    let html = '<div class="recipes-grid">';
+    const recipesContainer = document.getElementById('user-recipes-container');
+    recipesContainer.innerHTML = '<div class="loading-message">Loading your recipes...</div>';
+    
+    fetch(`/api/recipes/user/${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch recipes');
+            }
+            return response.json();
+        })
+        .then(recipes => {
+            if (recipes.length === 0) {
+                recipesContainer.innerHTML = `
+                    <div class="no-recipes-message">
+                        <p>You haven't created any recipes yet.</p>
+                        <button class="create-recipe-btn" onclick="window.location.href='create-recipe.html'">Create Your First Recipe</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            recipesContainer.innerHTML = '';
+            
+            recipes.forEach(recipe => {
+                const recipeCard = document.createElement('div');
+                recipeCard.className = 'recipe-card';
+                
+                const imageUrl = recipe.image || 'https://via.placeholder.com/300x200?text=No+Image';
+                
+                recipeCard.innerHTML = `
+                    <div class="recipe-image">
+                        <img src="${imageUrl}" alt="${recipe.title}">
+                    </div>
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">${recipe.title}</h3>
+                        <div class="recipe-meta">
+                            <span>${recipe.difficulty} • ${recipe.cookingTime} mins</span>
+                        </div>
+                        <p class="recipe-description">${recipe.description}</p>
+                        <div class="recipe-actions">
+                            <a href="recipes.html?id=${recipe._id}" class="view-btn">View</a>
+                            <a href="edit-recipe.html?id=${recipe._id}" class="edit-btn">Edit</a>
+                        </div>
+                    </div>
+                `;
+                
+                recipesContainer.appendChild(recipeCard);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading recipes:', error);
+            recipesContainer.innerHTML = `
+                <div class="loading-message">
+                    <p>Failed to load recipes. Please try again later.</p>
+                </div>
+            `;
+        });
+}
+
+// Display user recipes in the UI
+function displayUserRecipes(recipes) {
+    const container = document.getElementById('my-recipes');
+    if (!container) return;
+    
+    if (!recipes || recipes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>You haven't created any recipes yet.</p>
+                <button id="create-first-recipe" class="btn primary-btn">Create Your First Recipe</button>
+            </div>
+        `;
+        
+        const createButton = document.getElementById('create-first-recipe');
+        if (createButton) {
+            createButton.addEventListener('click', () => {
+                window.location.href = 'create-recipe.html';
+            });
+        }
+        return;
+    }
+    
+    let html = `
+        <div class="section-header">
+            <h2>Your Recipes</h2>
+            <button id="create-recipe-btn" class="btn primary-btn">Create New Recipe</button>
+        </div>
+        <div class="recipes-grid">
+    `;
     
     recipes.forEach(recipe => {
         html += `
-            <div class="recipe-card">
-                <div class="recipe-image">
-                    ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.title}">` : '<div class="no-image">No Image</div>'}
-                </div>
+            <div class="recipe-card" data-id="${recipe._id}">
+                <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=Recipe'}" alt="${recipe.title}" class="recipe-image">
                 <div class="recipe-content">
                     <h3 class="recipe-title">${recipe.title}</h3>
-                    <p class="recipe-meta">
-                        <span>${recipe.cookingTime} mins</span> • 
-                        <span>${recipe.difficulty}</span> • 
-                        <span>${recipe.isPublic ? 'Public' : 'Private'}</span>
-                    </p>
-                    <p class="recipe-description">${recipe.description.substring(0, 100)}${recipe.description.length > 100 ? '...' : ''}</p>
+                    <p class="recipe-description">${recipe.description || 'No description provided.'}</p>
+                    <div class="recipe-meta">
+                        <span class="recipe-time">${recipe.cookingTime || 0} mins</span>
+                        <span class="recipe-difficulty">${recipe.difficulty || 'Easy'}</span>
+                    </div>
                     <div class="recipe-actions">
-                        <a href="recipe.html?id=${recipe._id}" class="view-btn">View</a>
-                        <a href="edit-recipe.html?id=${recipe._id}" class="edit-btn">Edit</a>
+                        <button class="btn view-btn" onclick="window.location.href='recipes.html?id=${recipe._id}'">View</button>
+                        <button class="btn edit-btn" onclick="editRecipe('${recipe._id}')">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteRecipe('${recipe._id}')">Delete</button>
                     </div>
                 </div>
             </div>
@@ -631,17 +751,14 @@ function displayUserRecipes(recipes) {
     });
     
     html += '</div>';
-    recipesContainer.innerHTML = html;
+    container.innerHTML = html;
+    
+    // Set up the create recipe button again
+    setupCreateRecipeButton();
 }
 
-// Make sure to call this function when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    loadUserProfile();
-    loadUserRecipes();
-});
-
-// Load meal plans for the user
-async function loadMealPlans() {
+// Load user favorites
+async function loadFavorites() {
     try {
         const userId = localStorage.getItem('userId');
         const authToken = localStorage.getItem('authToken');
@@ -650,115 +767,203 @@ async function loadMealPlans() {
             return;
         }
         
-        const mealPlansContainer = document.getElementById('mealplans');
-        if (!mealPlansContainer) return;
+        const favoritesContainer = document.getElementById('favorites');
+        if (!favoritesContainer) return;
         
-        mealPlansContainer.innerHTML = '<div class="loading">Loading meal plans...</div>';
+        favoritesContainer.innerHTML = '<div class="loading">Loading favorites...</div>';
         
-        const response = await fetch(`/api/meal-plans/user/${userId}`, {
+        const response = await fetch(`/api/users/${userId}/favorites`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
         
         if (!response.ok) {
-            throw new Error('Failed to fetch meal plans');
+            throw new Error('Failed to fetch favorites');
         }
         
         const data = await response.json();
         
-        if (!data.success || !data.mealPlans || data.mealPlans.length === 0) {
-            mealPlansContainer.innerHTML = `
+        if (!data.favorites || data.favorites.length === 0) {
+            favoritesContainer.innerHTML = `
                 <div class="empty-state">
-                    <p>You haven't created any meal plans yet.</p>
-                    <a href="meal-planner.html" class="btn primary-btn">Create Meal Plan</a>
+                    <p>You haven't added any favorites yet.</p>
+                    <a href="recipes-list.html" class="btn primary-btn">Browse Recipes</a>
                 </div>
             `;
             return;
         }
         
-        // Display meal plans
+        // Display favorites
         let html = `
             <div class="section-header">
-                <h2>Your Meal Plans</h2>
-                <a href="meal-planner.html" class="btn primary-btn">Create New Plan</a>
+                <h2>Your Favorite Recipes</h2>
             </div>
-            <div class="meal-plans-grid">
+            <div class="recipes-grid">
         `;
         
-        data.mealPlans.forEach(plan => {
-            const date = new Date(plan.createdAt).toLocaleDateString();
-            
+        data.favorites.forEach(recipe => {
             html += `
-                <div class="meal-plan-card">
-                    <h3 class="meal-plan-title">${plan.planName}</h3>
-                    <p class="meal-plan-description">${plan.description || 'No description'}</p>
-                    <div class="meal-plan-meta">
-                        <span class="meal-plan-date">Created: ${date}</span>
-                    </div>
-                    <div class="meal-plan-actions">
-                        <button class="btn view-btn" onclick="viewMealPlan('${plan._id}')">View Plan</button>
-                        <button class="btn delete-btn" onclick="deleteMealPlan('${plan._id}')">Delete</button>
+                <div class="recipe-card">
+                    <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=Recipe'}" alt="${recipe.title}" class="recipe-image">
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">${recipe.title}</h3>
+                        <p class="recipe-description">${recipe.description || 'No description provided.'}</p>
+                        <div class="recipe-meta">
+                            <span class="recipe-time">${recipe.cookingTime || 0} mins</span>
+                            <span class="recipe-difficulty">${recipe.difficulty || 'Easy'}</span>
+                        </div>
+                        <div class="recipe-actions">
+                            <button class="btn view-btn" onclick="window.location.href='recipe.html?id=${recipe._id}'">View</button>
+                            <button class="btn remove-btn" onclick="removeFromFavorites('${recipe._id}')">Remove</button>
+                        </div>
                     </div>
                 </div>
             `;
         });
         
         html += '</div>';
-        mealPlansContainer.innerHTML = html;
+        favoritesContainer.innerHTML = html;
         
     } catch (error) {
-        console.error('Error loading meal plans:', error);
-        const mealPlansContainer = document.getElementById('mealplans');
-        if (mealPlansContainer) {
-            mealPlansContainer.innerHTML = `
+        console.error('Error loading favorites:', error);
+        const favoritesContainer = document.getElementById('favorites');
+        if (favoritesContainer) {
+            favoritesContainer.innerHTML = `
                 <div class="error-message">
-                    <p>Failed to load meal plans. Please try again later.</p>
+                    <p>Failed to load favorites. Please try again later.</p>
                 </div>
             `;
         }
     }
 }
 
-// View a specific meal plan
-function viewMealPlan(planId) {
-    window.location.href = `meal-plan-view.html?id=${planId}`;
+// Load user collections
+async function loadCollections() {
+    try {
+        const userId = localStorage.getItem('userId');
+        const authToken = localStorage.getItem('authToken');
+        
+        if (!userId || !authToken) {
+            return;
+        }
+        
+        const collectionsContainer = document.getElementById('collections');
+        if (!collectionsContainer) return;
+        
+        collectionsContainer.innerHTML = '<div class="loading">Loading collections...</div>';
+        
+        const response = await fetch(`/api/users/${userId}/collections`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch collections');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.collections || data.collections.length === 0) {
+            collectionsContainer.innerHTML = `
+                <div class="empty-state">
+                    <p>You haven't created any collections yet.</p>
+                    <button id="create-collection-btn" class="btn primary-btn">Create Collection</button>
+                </div>
+            `;
+            
+            const createButton = document.getElementById('create-collection-btn');
+            if (createButton) {
+                createButton.addEventListener('click', () => {
+                    // Open create collection modal or redirect to collection creation page
+                    alert('Collection creation feature coming soon!');
+                });
+            }
+            return;
+        }
+        
+        // Display collections
+        let html = `
+            <div class="section-header">
+                <h2>Your Collections</h2>
+                <button id="create-collection-btn" class="btn primary-btn">Create Collection</button>
+            </div>
+            <div class="collections-grid">
+        `;
+        
+        data.collections.forEach(collection => {
+            html += `
+                <div class="collection-card">
+                    <h3 class="collection-title">${collection.name}</h3>
+                    <p class="collection-description">${collection.description || 'No description provided.'}</p>
+                    <div class="collection-meta">
+                        <span>${collection.recipes.length} recipes</span>
+                    </div>
+                    <div class="collection-actions">
+                        <button class="btn view-btn" onclick="viewCollection('${collection._id}')">View</button>
+                        <button class="btn edit-btn" onclick="editCollection('${collection._id}')">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteCollection('${collection._id}')">Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        collectionsContainer.innerHTML = html;
+        
+        // Set up create collection button
+        const createButton = document.getElementById('create-collection-btn');
+        if (createButton) {
+            createButton.addEventListener('click', () => {
+                // Open create collection modal or redirect to collection creation page
+                alert('Collection creation feature coming soon!');
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading collections:', error);
+        const collectionsContainer = document.getElementById('collections');
+        if (collectionsContainer) {
+            collectionsContainer.innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load collections. Please try again later.</p>
+                </div>
+            `;
+        }
+    }
 }
 
-// Delete a meal plan
+// View meal plan details
+function viewMealPlan(planId) {
+    window.location.href = `meal-plan.html?id=${planId}`;
+}
+
+// Delete meal plan
 async function deleteMealPlan(planId) {
     if (!confirm('Are you sure you want to delete this meal plan?')) {
         return;
     }
     
     try {
-        const userId = localStorage.getItem('userId');
         const authToken = localStorage.getItem('authToken');
-        
-        if (!userId || !authToken) {
-            alert('You must be logged in to delete a meal plan');
-            return;
-        }
-        
         const response = await fetch(`/api/meal-plans/${planId}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify({ userId })
+            }
         });
         
         if (!response.ok) {
             throw new Error('Failed to delete meal plan');
         }
         
-        alert('Meal plan deleted successfully');
-        loadMealPlans(); // Reload the meal plans
-        
+        // Reload meal plans after deletion
+        loadMealPlans();
+        showSuccess('Meal plan deleted successfully');
     } catch (error) {
         console.error('Error deleting meal plan:', error);
-        alert('Failed to delete meal plan. Please try again.');
+        showError('Failed to delete meal plan');
     }
 }
 
