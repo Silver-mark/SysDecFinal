@@ -134,6 +134,12 @@ body {
 
 .nutrition-card {
     grid-area: nutrition;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Recipe Main Content */
@@ -232,7 +238,9 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-    margin-top: 1rem;
+    margin: 1rem auto;
+    justify-content: center;
+    width: 90%;
 }
 
 .recipe-tag {

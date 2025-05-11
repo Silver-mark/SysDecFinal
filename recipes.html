@@ -46,26 +46,6 @@
 
         <section class="search-header">
             <h1 id="recipe-title" class="search-title"></h1>
-            
-            <div class="recipe-meta">
-                <div class="meta-item">
-                    <i class="fas fa-clock meta-icon"></i>
-                    <span id="recipe-time"></span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-utensils meta-icon"></i>
-                    <span id="recipe-servings"></span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-chart-line meta-icon"></i>
-                    <span id="recipe-difficulty"></span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-user meta-icon"></i>
-                    <span id="recipe-author"></span>
-                </div>
-            </div>
-            
             <div class="recipe-actions">
                 <button id="star-btn" class="action-btn search-button" title="Rate this recipe">
                     <i class="far fa-star"></i> 
@@ -76,17 +56,9 @@
                     <i class="far fa-heart"></i> 
                     <span>Add to Favorites</span>
                 </button>
-                <button id="save-btn" class="action-btn search-button" title="Save recipe to your collection">
-                    <i class="far fa-bookmark"></i> 
-                    <span>Save Recipe</span>
-                </button>
                 <button id="print-btn" class="action-btn search-button" title="Print recipe">
                     <i class="fas fa-print"></i> 
                     <span>Print Recipe</span>
-                </button>
-                <button id="copy-btn" class="action-btn search-button" title="Copy recipe to your collection">
-                    <i class="fas fa-copy"></i> 
-                    <span>Copy Recipe</span>
                 </button>
             </div>
         </section>
@@ -96,6 +68,8 @@
         </div>
 
         <div id="recipe-description" class="recipe-description"></div>
+
+        <div id="recipe-tags" class="recipe-tags"></div>
 
         <div class="recipe-content">
             <div class="recipe-main results-section">
@@ -108,20 +82,18 @@
                     <h2 class="filters-title">Instructions</h2>
                     <ol id="instructions-list" class="instructions-list"></ol>
                 </section>
-            </div>
 
-            <div class="recipe-sidebar filters-section">
                 <section class="nutrition-card">
                     <h2 class="filters-title">Nutrition Facts</h2>
                     <div id="nutrition-facts" class="nutrition-grid"></div>
                 </section>
+            </div>
 
+            <div class="recipe-sidebar filters-section">
                 <section id="notes-section" class="notes-section" style="display: none;">
                     <h2 class="filters-title">Recipe Notes</h2>
                     <div id="recipe-notes" class="recipe-notes"></div>
                 </section>
-
-                <div id="recipe-tags" class="recipe-tags"></div>
             </div>
         </div>
     </main>

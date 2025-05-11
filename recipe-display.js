@@ -116,9 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayRecipe(recipe) {
         // Set basic recipe info
         recipeTitle.textContent = recipe.title;
-        recipeTime.textContent = `${recipe.cookTime || recipe.cookingTime || '30'} mins`;
-        recipeServings.textContent = `${recipe.servings || '4'} servings`;
-        recipeDifficulty.textContent = capitalizeFirstLetter(recipe.difficulty || 'medium');
         
         // Set recipe image
         if (recipe.image && recipe.image.trim() !== '') {
@@ -132,16 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set recipe description
         recipeDescription.innerHTML = recipe.description || 'No description available.';
         
-        // Set author information
-        if (recipe.userId && recipe.userId === localStorage.getItem('userId')) {
-            recipeAuthor.textContent = 'You';
-        } else if (recipe.author && recipe.author.name) {
-            recipeAuthor.textContent = recipe.author.name;
-        } else if (recipe.author) {
-            recipeAuthor.textContent = recipe.author;
-        } else {
-            recipeAuthor.textContent = 'Unknown';
-        }
+       
         
         // Display ingredients
         displayIngredients(recipe.ingredients);

@@ -1,5 +1,7 @@
 # This is Whats Left
 
+rate recipe how to handle
+counter and ticker display on admin page from rate recipe
 
 profile image lost?
 change contact us sumbit button to act as mailto with a filled in form
@@ -7,9 +9,6 @@ change contact us sumbit button to act as mailto with a filled in form
 
 ## Critical Necessity
 Remake and support admin
-Create Email 
-attach email to admin
-
 
 ## Sign in Sign up 
 To fully implement Google authentication, you would need to:
