@@ -21,11 +21,6 @@ async function loadHeroRecipe() {
                 <div class="hero-content">
                     <h1 class="hero-title">${heroRecipe.title}</h1>
                     <p class="hero-subtitle">${heroRecipe.description || 'Discover this amazing recipe'}</p>
-                    <div class="hero-meta">
-                        <span class="meta-item"><i class="meta-icon">⏱️</i> ${heroRecipe.cookTime} mins</span>
-                        <span class="meta-item"><i class="meta-icon">👨‍🍳</i> ${heroRecipe.difficulty || 'Easy'}</span>
-                        <span class="meta-item"><i class="meta-icon">⭐</i> ${heroRecipe.rating || 0}</span>
-                    </div>
                 </div>
             `;
             
@@ -134,12 +129,6 @@ function displayRecipes(containerId, recipes)
             <div class="recipe-content">
                 <h3 class="recipe-title">${recipe.title}</h3>
                 <p class="recipe-description">${recipe.description || ''}</p>
-                <div class="recipe-meta">
-                    <span class="meta-item"><i class="meta-icon">⏱️</i> ${recipe.cookTime} mins</span>
-                    <span class="meta-item"><i class="meta-icon">👨‍🍳</i> ${recipe.difficulty || 'Easy'}</span>
-                    <span class="meta-item"><i class="meta-icon">⭐</i> ${recipe.rating || 0}</span>
-                    <span class="meta-item"><i class="meta-icon">👥</i> ${recipe.servings || 4} servings</span>
-                </div>
                 <div class="recipe-tags">
                     ${categories.map(tag => `<span class="recipe-tag">${tag}</span>`).join('')}
                 </div>

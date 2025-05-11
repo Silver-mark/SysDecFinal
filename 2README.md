@@ -1,11 +1,9 @@
 # This is Whats Left
 
-Remove all refrences to landing.html
-Logo needs to be ajusted on header bar
-get rid of cook times, ratings and servings from api recipie cards
-update all heeaders and footers to match home
+
 profile image lost?
 change contact us sumbit button to act as mailto with a filled in form
+    -send message contact to mail too form
 
 ## Critical Necessity
 Remake and support admin
