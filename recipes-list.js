@@ -118,22 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
                 <div class="recipe-content">
                     <h3 class="recipe-title">${recipe.title}</h3>
-                    <div class="recipe-meta">
-                        <div class="recipe-stats">
-                            <span class="stat-item">
-                                <i class="stat-icon">⏱️</i>
-                                ${recipe.cookTime || '30'} mins
-                            </span>
-                            <span class="stat-item">
-                                <i class="stat-icon">👨‍🍳</i>
-                                ${recipe.difficulty || 'Easy'}
-                            </span>
-                            <span class="stat-item">
-                                <i class="stat-icon">⭐</i>
-                                ${recipe.rating || '4.5'}
-                            </span>
-                        </div>
-                    </div>
                 </div>
             `;
             
