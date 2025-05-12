@@ -180,17 +180,6 @@ app.delete('/api/meal-plans/:id', deleteMealPlan);
 // Add these new endpoints for admin dashboard
 const Recipe = require('./recipes');
 
-// Get total recipe count
-app.get('/api/recipes/count/total', async (req, res) => {
-  try {
-    const count = await Recipe.countDocuments();
-    res.json({ count });
-  } catch (error) {
-    console.error('Error counting recipes:', error);
-    res.status(500).json({ message: 'Error counting recipes' });
-  }
-});
-
 // Get dashboard stats
 app.get('/api/admin/dashboard/stats', async (req, res) => {
   try {

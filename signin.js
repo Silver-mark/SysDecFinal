@@ -15,12 +15,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function handleGoogleSignIn() {
     try {
-        // This would be implemented once Google OAuth is set up
-        console.log('Google sign-in clicked');
-        alert('Google sign-in is not yet implemented');
+        // Initialize Google OAuth client
+        const client = google.accounts.oauth2.initTokenClient({
+            client_id: '444218256661-8skotkmfhlpt89057q0281eq0vu4qlku.apps.googleusercontent.com',
+            scope: 'profile email',
+            callback: async (response) => {
+                if (response.access_token) {
+                    // Send token to your backend for verification
+                    const res = await fetch('/api/users/google-auth', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            token: response.access_token
+                        })
+                    });
+                    
+                    const userData = await res.json();
+                    
+                    if (res.ok) {
+                        // Store user data in localStorage
+                        localStorage.setItem('userId', userData._id);
+                        localStorage.setItem('userName', userData.name);
+                        localStorage.setItem('username', userData.username);
+                        localStorage.setItem('authToken', userData.token);
+                        
+                        // Redirect to profile page
+                        window.location.href = 'profile.html';
+                    } else {
+                        throw new Error(userData.message || 'Google authentication failed');
+                    }
+                }
+            }
+        });
+        
+        // Request access token
+        client.requestAccessToken();
     } catch (error) {
         console.error('Google sign-in error:', error);
-        showError('Google sign-in failed');
+        showError('Google sign-in failed: ' + error.message);
     }
 }
 

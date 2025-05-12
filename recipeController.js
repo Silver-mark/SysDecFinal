@@ -1,4 +1,4 @@
-const Recipe = require('./recipes');
+const Recipe = require('./recipes.js');
 
 // Create a new recipe
 const createRecipe = async (req, res) => {

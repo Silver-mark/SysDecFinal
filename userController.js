@@ -1,5 +1,10 @@
 const User = require('./User');
 const { generateToken } = require('./auth');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(
+  '444218256661-8skotkmfhlpt89057q0281eq0vu4qlku.apps.googleusercontent.com',
+  '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'
+);
 
 // @desc    Register a new user - simplified version
 // @route   POST /api/users/register
@@ -164,9 +169,84 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const googleAuth = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '444218256661-8skotkmfhlpt89057q0281eq0vu4qlku.apps.googleusercontent.com'
+    });
+    
+    const payload = ticket.getPayload();
+    const user = await User.findOne({ email: payload.email });
+
+    if (user) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id)
+      });
+    } else {
+      res.status(404).json({ message: 'User not found. Please sign up first.' });
+    }
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(401).json({ message: 'Invalid Google token' });
+  }
+};
+
+const googleSignup = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '444218256661-8skotkmfhlpt89057q0281eq0vu4qlku.apps.googleusercontent.com'
+    });
+    
+    const payload = ticket.getPayload();
+    const existingUser = await User.findOne({ email: payload.email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const user = await User.create({
+      name: payload.name,
+      email: payload.email,
+      profileData: {
+        bio: '',
+        avatar: '',
+        created: [],
+        mealPlans: [],
+        rated: [],
+        favorites: [],
+        preferences: {
+          cuisines: [],
+          diet: 'none',
+          skillLevel: 'beginner',
+          cookingTime: 'any'
+        }
+      }
+    });
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id)
+    });
+  } catch (error) {
+    console.error('Google signup error:', error);
+    res.status(400).json({ message: 'Google signup failed' });
+  }
+};
+
 module.exports = { 
   registerUser, 
   loginUser, 
   getUserProfileById, 
-  updateUserProfile 
+  updateUserProfile,
+  googleAuth,
+  googleSignup
 };

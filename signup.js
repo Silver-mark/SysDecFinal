@@ -185,20 +185,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    const googleSignUpButton = document.querySelector('.google-signup');
-    if (googleSignUpButton) {
-        googleSignUpButton.addEventListener('click', handleGoogleSignUp);
+    const googleSignupButton = document.querySelector('.google-signup');
+    if (googleSignupButton) {
+        googleSignupButton.addEventListener('click', handleGoogleSignup);
     }
 });
 
-async function handleGoogleSignUp() {
+async function handleGoogleSignup() {
     try {
-        // This would be implemented once Google OAuth is set up
-        console.log('Google sign-up clicked');
-        alert('Google sign-up is not yet implemented');
+        const client = google.accounts.oauth2.initTokenClient({
+            client_id: '444218256661-8skotkmfhlpt89057q0281eq0vu4qlku.apps.googleusercontent.com',
+            scope: 'profile email',
+            callback: async (response) => {
+                if (response.access_token) {
+                    const res = await fetch('/api/users/google-signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            token: response.access_token
+                        })
+                    });
+                    
+                    const userData = await res.json();
+                    
+                    if (res.ok) {
+                        alert('Registration successful!');
+                        window.location.href = 'signin.html';
+                    } else {
+                        throw new Error(userData.message || 'Google registration failed');
+                    }
+                }
+            }
+        });
+        client.requestAccessToken();
     } catch (error) {
-        console.error('Google sign-up error:', error);
-        alert('Google sign-up failed');
+        console.error('Google signup error:', error);
+        alert('Google signup failed: ' + error.message);
     }
 }
 ;
