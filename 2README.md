@@ -3,6 +3,8 @@
 rate recipe how to handle
 counter and ticker display on admin page from rate recipe
 
+edit recipe load create recipe page filled in
+
 profile image lost?
 change contact us sumbit button to act as mailto with a filled in form
     -send message contact to mail too form
