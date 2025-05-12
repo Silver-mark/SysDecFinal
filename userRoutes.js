@@ -20,6 +20,8 @@ const {
 // Public routes
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/google-auth', googleAuth);
+router.post('/google-signup', googleSignup);
 
 // Profile routes (simplified without auth middleware)
 router.get('/profile/:id', getUserProfileById);
