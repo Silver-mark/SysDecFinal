@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Recspicy</title>
-    <link rel="stylesheet" href="navigation.css">
-    <link rel="stylesheet" href="admin.css">
-    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/admin.css">
+    <link rel="stylesheet" href="/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
         <div class="nav-container">
             <div class="logo">
                 <a href="index.html">
-                    <img src="logo1.png" alt="Recspicy Logo">
+                    <img src="logo.png" alt="Recspicy Logo">
                 </a>
             </div>
             <div class="nav-links" id="navLinks">
@@ -45,7 +45,7 @@
     <div class="admin-container">
         <aside class="admin-sidebar">
             <div class="admin-logo">
-                <img src="/images/logo.png" alt="Recspicy Logo">
+                <img src="logo1.png" alt="Recspicy Logo">
             </div>
             
             <nav>
@@ -54,24 +54,6 @@
                         <a href="#" class="admin-nav-link" data-section="overview">
                             <i class="nav-icon fas fa-home"></i>
                             Dashboard Overview
-                        </a>
-                    </li>
-                    <li class="admin-nav-item">
-                        <a href="#" class="admin-nav-link" data-section="recipe-analytics">
-                            <i class="nav-icon fas fa-chart-bar"></i>
-                            Recipe Analytics
-                        </a>
-                    </li>
-                    <li class="admin-nav-item">
-                        <a href="#" class="admin-nav-link" data-section="user-engagement">
-                            <i class="nav-icon fas fa-users"></i>
-                            User Engagement
-                        </a>
-                    </li>
-                    <li class="admin-nav-item">
-                        <a href="#" class="admin-nav-link" data-section="faq-management">
-                            <i class="nav-icon fas fa-question-circle"></i>
-                            FAQ Management
                         </a>
                     </li>
                     <li class="admin-nav-item">
@@ -104,7 +86,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-value" id="total-users">0</h3>
+                            <h3 class="stat-value" id="total-users">"0"</h3>
                             <p class="stat-label">Total Users</p>
                         </div>
                     </div>
@@ -113,118 +95,37 @@
                             <i class="fas fa-book-open"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-value" id="total-recipes">0</h3>
+                            <h3 class="stat-value" id="total-recipes">"0"</h3>
                             <p class="stat-label">Total Recipes</p>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Activities Chart 
-                <div class="analytics-chart">
-                    <h2>Platform Activity (Last 30 Days)</h2>
-                    <canvas id="activity-chart"></canvas>
-                </div>
-                
-                <div class="popular-recipes">
-                    <h2>Most Popular Recipes</h2>
-                    <div class="table-responsive">
-                        <table class="recipe-stats-table" id="popular-recipes-table">
-                            <thead>
-                                <tr>
-                                    <th>Recipe</th>
-                                    <th>Author</th>
-                                    <th>Views</th>
-                                    <th>Favorites</th>
-                                    <th>Comments</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                 -->
             </section>
-            
-            <section id="recipe-analytics" class="content-section">
+            <section id="support" class="content-section">
                 <div class="section-header">
-                    <h1 class="section-title">Recipe Analytics</h1>
-                    <p class="section-description">Detailed analytics about recipes on the platform.</p>
+                    <h1 class="section-title">Support Center</h1>
+                    <p class="section-description">Use these credentials to access the support portal.</p>
                 </div>
                 
-                <div class="tab-container">
-                    <button class="tab-btn" data-tab="most-viewed">Most Viewed</button>
-                    <button class="tab-btn" data-tab="most-favorited">Most Favorited</button>
-                    <button class="tab-btn" data-tab="recipe-categories">Recipe Categories</button>
-                </div>
-
-                <div id="most-viewed-content" class="tab-content">
-                    <div class="analytics-chart">
-                        <h2>Top 10 Most Viewed Recipes</h2>
-                        <canvas id="most-viewed-chart"></canvas>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="recipe-stats-table" id="most-viewed-table">
-                            <thead>
-                                <tr>
-                                    <th>Recipe</th>
-                                    <th>Views</th>
-                                    <th>Author</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                <div class="support-credentials">
+                    <div class="credential-card">
+                        <h3>Admin Portal Access</h3>
+                        <div class="credential-field">
+                            <span>Email:</span>
+                            <span class="credential-value">AdminSupport@recspicy.com</span>
+                        </div>
+                        <div class="credential-field">
+                            <span>Password:</span>
+                            <span class="credential-value">AdminPassword</span>
+                        </div>
                     </div>
                 </div>
-
-                <div id="most-favorited-content" class="tab-content">
-                    <div class="analytics-chart">
-                        <h2>Top 10 Most Favorited Recipes</h2>
-                        <canvas id="most-favorited-chart"></canvas>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="recipe-stats-table" id="most-favorited-table">
-                            <thead>
-                                <tr>
-                                    <th>Recipe</th>
-                                    <th>Favorites</th>
-                                    <th>Author</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="recipe-categories-content" class="tab-content">
-                    <div class="analytics-chart">
-                        <h2>Recipe Distribution by Category</h2>
-                        <canvas id="categories-chart"></canvas>
-                    </div>
-                    <div class="analytics-chart">
-                        <h2>Recipe Distribution by Difficulty</h2>
-                        <canvas id="difficulty-chart"></canvas>
-                    </div>
-                    <div class="analytics-chart">
-                        <h2>Recipe Distribution by Cooking Time</h2>
-                        <canvas id="cooking-time-chart"></canvas>
-                    </div>
-                </div>
-                */
             </section>
          
         </main>
     </div>
     
 
-    <script src="/navigation.js"></script>
-    <script type="module" src="/admin.js"></script>
     
     <!-- Footer -->
     <footer class="footer">
@@ -256,5 +157,9 @@
             <p>&copy; 2025 Recspicy. All rights reserved.</p>
         </div>
     </footer>
+    
+<script src="/navigation.js"></script>
+<script type="module" src="/admin.js"></script>
 </body>
 </html>
+
