@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Recipes - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="recipes-list.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo1.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html" class="active">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="search-container">
+        <div id="error-container" class="error-message">
+            <span id="error-message"></span>
+        </div>
+
+        <section class="search-header">
+            <h1 class="search-title">Browse Recipes</h1>
+            <p class="search-subtitle">Discover delicious recipes for every occasion</p>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" placeholder="Search recipes...">
+                <button class="search-button"><i class="fas fa-search"></i></button>
+            </div>
+        </section>
+
+        <section class="filters-section">
+            <h2 class="filters-title">Filters</h2>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Recipes</button>
+                <button class="filter-btn" data-filter="Beef">Beef</button>
+                <button class="filter-btn" data-filter="Chicken">Chicken</button>
+                <button class="filter-btn" data-filter="Dessert">Dessert</button>
+                <button class="filter-btn" data-filter="Lamb">Lamb</button>
+                <button class="filter-btn" data-filter="Miscellaneous">Miscellaneous</button>
+                <button class="filter-btn" data-filter="Pasta">Pasta</button>
+                <button class="filter-btn" data-filter="Pork">Pork</button>
+                <button class="filter-btn" data-filter="Seafood">Seafood</button>
+                <button class="filter-btn" data-filter="Side">Side</button>
+                <button class="filter-btn" data-filter="Starter">Starter</button>
+                <button class="filter-btn" data-filter="Vegan">Vegan</button>
+                <button class="filter-btn" data-filter="Vegetarian">Vegetarian</button>
+                <button class="filter-btn" data-filter="Breakfast">Breakfast</button>
+                <button class="filter-btn" data-filter="Goat">Goat</button>
+            </div>
+            
+            <div class="sort-container">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" class="sort-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="az">A-Z</option>
+                    <option value="za">Z-A</option>
+                    <option value="quickest">Cooking Time</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div id="recipes-container" class="recipes-grid">
+                <!-- Recipe cards will be inserted here by JavaScript -->
+            </div>
+            
+            <button id="load-more-btn" class="load-more-btn">Load More</button>
+        </section>
+    </main>
+	
+	  <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Recspicy Logo">
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="recipes-list.html">Recipes</a></li>
+                        <li><a href="meal-planner.html">Meal Planner</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Recspicy. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- Before closing body tag -->
+    <script src="navigation.js"></script>
+    <script src="mealdb-api.js"></script>
+    <script src="recipes-list.js"></script>
+</body>
+</html>

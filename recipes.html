@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="recipe.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo1.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html" class="active">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="search-container">
+        <div id="error-container" class="error-message">
+            <span id="error-message"></span>
+        </div>
+
+        <section class="search-header">
+            <h1 id="recipe-title" class="search-title"></h1>
+            <div class="recipe-actions">
+                <button id="star-btn" class="action-btn search-button" title="Rate this recipe">
+                    <i class="far fa-star"></i> 
+                    <span>Rate Recipe</span>
+                    <span id="star-count" class="count-badge">0</span>
+                </button>
+                <button id="favorite-btn" class="action-btn search-button" title="Add to favorites">
+                    <i class="far fa-heart"></i> 
+                    <span>Add to Favorites</span>
+                </button>
+                <button id="print-btn" class="action-btn search-button" title="Print recipe">
+                    <i class="fas fa-print"></i> 
+                    <span>Print Recipe</span>
+                </button>
+            </div>
+        </section>
+
+        <div class="recipe-image-container">
+            <img id="recipe-image" class="recipe-image" src="" alt="">
+        </div>
+
+        <div id="recipe-description" class="recipe-description"></div>
+
+        <div id="recipe-tags" class="recipe-tags"></div>
+
+        <div class="recipe-content">
+            <div class="recipe-main results-section">
+                <section class="recipe-section">
+                    <h2 class="filters-title">Ingredients</h2>
+                    <ul id="ingredients-list" class="ingredients-list"></ul>
+                </section>
+
+                <section class="recipe-section">
+                    <h2 class="filters-title">Instructions</h2>
+                    <ol id="instructions-list" class="instructions-list"></ol>
+                </section>
+
+                <section class="nutrition-card">
+                    <h2 class="filters-title">Nutrition Facts</h2>
+                    <div id="nutrition-facts" class="nutrition-grid"></div>
+                </section>
+            </div>
+
+            <div class="recipe-sidebar filters-section">
+                <section id="notes-section" class="notes-section" style="display: none;">
+                    <h2 class="filters-title">Recipe Notes</h2>
+                    <div id="recipe-notes" class="recipe-notes"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-message" class="toast-message"></div>
+
+   <!-- Footer -->
+   <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-logo">
+            <img src="logo.png" alt="Recspicy Logo">
+        </div>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Recspicy. All rights reserved.</p>
+    </div>
+</footer>
+
+    <script src="navigation.js"></script>
+    <script src="recipes.js"></script>
+    <script src="mealdb-api.js"></script>
+    <script src="recipe-display.js"></script>
+</body>
+</html>

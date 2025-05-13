@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authors: James McGuigan & Steven Foster -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Recspicy</title>
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="faq.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo1.png" alt="Recspicy Logo">
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="user-actions">
+                <a href="profile.html" class="profile-link">My Profile</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="faq-container">
+        <section class="faq-header">
+            <h1 class="faq-title">Frequently Asked Questions</h1>
+            <p class="faq-subtitle">Find answers to common questions about Recspicy</p>
+        </section>
+
+        <div class="faq-categories">
+            <section class="faq-section">
+                <h2 class="section-title">Account Management</h2>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span class="question-text">How do I create an account?</span>
+                        <span class="question-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Click the "Sign Up" button on our homepage. You can create an account using your email 
+                        or sign up with Google. Fill in your details and you're ready to start using Recspicy!
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span class="question-text">Can I use Recspicy without an account?</span>
+                        <span class="question-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes! You can browse recipes as a guest, but creating an account gives you access to 
+                        features like saving recipes, creating meal plans, and sharing your own recipes.
+                    </div>
+                </div>
+            </section>
+
+            <section class="faq-section">
+                <h2 class="section-title">Recipe Management</h2>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span class="question-text">How do I save a recipe?</span>
+                        <span class="question-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        When viewing a recipe, click the heart icon to save it to your favorites. 
+                        You'll need to be logged in to use this feature.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span class="question-text">Can I share my own recipes?</span>
+                        <span class="question-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes! Once logged in, you can create and share your recipes. You can choose to 
+                        keep them private or share them with the Recspicy community.
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="help-section">
+            <h2 class="help-title">Still Need Help?</h2>
+            <p class="help-text">Our support team is here to assist you</p>
+            <a href="contact.html" class="help-button">Contact Support</a>
+        </section>
+    </main>
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-logo">
+            <img src="logo.png" alt="Recspicy Logo">
+        </div>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="recipes-list.html">Recipes</a></li>
+                    <li><a href="meal-planner.html">Meal Planner</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="terms-privacy.html">Terms & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Recspicy. All rights reserved.</p>
+    </div>
+</footer>
+
+    <script src="faq.js"></script>
+</body>
+</html>

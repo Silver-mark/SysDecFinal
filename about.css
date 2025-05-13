@@ -1,0 +1,101 @@
+body {
+  background-color: #e6f0ff;
+}
+
+.about-container {
+  max-width: 50%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.about-subtitle {
+    color: #4a5568;
+    font-size: 1.25rem;
+}
+
+.about-section {
+    margin-bottom: 4rem;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    color: #1a365d;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 50px;
+    height: 3px;
+    background-color: #b40000;
+}
+
+.mission-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+}
+
+.mission-text {
+    width: 100%;
+}
+
+.mission-text p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.mission-image {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.mission-image img {
+    width: 100%;
+    border-radius: 0.5rem;
+}
+
+.values-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 100%;
+}
+
+.value-item {
+    background: #f7fafc;
+    padding: 2rem;
+    border-radius: 0.5rem;
+}
+
+.value-title {
+    color: #1a365d;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.value-item p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .mission-content {
+        flex-direction: column;
+    }
+
+    .mission-image {
+        order: -1;
+    }
+}

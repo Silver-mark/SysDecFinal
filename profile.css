@@ -1,0 +1,528 @@
+/* Profile Page Styles */
+body {
+    background-color: #e6f0ff;
+}
+
+.profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 2rem;
+    border: 3px solid #b40000;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #1a365d;
+    margin-bottom: 0.5rem;
+}
+
+.profile-bio {
+    color: #4a5568;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.edit-profile-btn {
+    background: #b40000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-profile-btn:hover {
+    background: #8b0000;
+}
+
+/* Preferences Section */
+.preferences-section {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preferences-title {
+    font-size: 1.25rem;
+    color: #1a365d;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.preferences-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.preference-item {
+    margin-bottom: 1rem;
+}
+
+.preference-label {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.preference-value {
+    font-weight: 600;
+    color: #1a365d;
+}
+
+/* Tabs Navigation */
+.tabs-container {
+    margin-bottom: 2rem;
+}
+
+.tabs-nav {
+    display: flex;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab:hover {
+    color: #b40000;
+}
+
+.tab.active {
+    color: #b40000;
+    border-bottom-color: #b40000;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Recipe Cards */
+.recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Recipe Container Styles */
+.recipe-container {
+    margin-top: 1.5rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.recipe-scroll {
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem 0;
+    gap: 1.5rem;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.recipe-card {
+    min-width: 280px;
+    max-width: 280px;
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    flex-shrink: 0;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.recipe-image {
+    height: 180px;
+    overflow: hidden;
+}
+
+.recipe-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.recipe-content {
+    padding: 1.25rem;
+}
+
+.recipe-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #1a365d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recipe-meta {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.75rem;
+}
+
+.recipe-description {
+    color: #4a5568;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.content-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1a365d;
+    margin-bottom: 1rem;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 2rem;
+    color: #718096;
+    width: 100%;
+}
+
+.no-recipes-message {
+    text-align: center;
+    padding: 2rem;
+    color: #718096;
+    width: 100%;
+}
+
+.recipe-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.view-btn,
+.edit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.view-btn {
+    background: #4299e1;
+    color: white;
+}
+
+.view-btn:hover {
+    background: #3182ce;
+}
+
+.edit-btn {
+    background: #ed8936;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #dd6b20;
+}
+
+.no-image {
+    background: #e2e8f0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 1rem;
+    color: #718096;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1a365d;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.form-actions button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.form-actions button[type="button"] {
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+}
+
+.form-actions button[type="submit"] {
+    background: #b40000;
+    color: white;
+    border: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .tabs-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .preferences-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Add styles for the profile actions and create recipe button */
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.create-recipe-btn {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-recipe-btn:hover {
+    background: #3182ce;
+}
+
+/* You can remove the preferences section styles if you want, or keep them for future use */
+
+/* Loading Overlay */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #b40000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-message {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: bottom 0.3s ease-in-out;
+    z-index: 2000;
+}
+
+.notification.show {
+    bottom: 20px;
+}
+
+.notification.success {
+    background-color: #48bb78;
+}
+
+.notification.error {
+    background-color: #e53e3e;
+}
+
+/* Meal Plans Section */
+#meal-plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.meal-plan-card {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.meal-plan-card h3 {
+    margin-top: 0;
+    color: #b40000;
+}
+
+.meal-plan-days {
+    margin: 1rem 0;
+}
+
+.meal-plan-day {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.meal-plan-day h4 {
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.edit-meal-plan-btn {
+    background: #b40000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-meal-plan-btn:hover {
+    background: #8b0000;
+}
+
+/* ... existing code ... */
