@@ -33,17 +33,27 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             let recipes = [];
             if (currentSearch) {
-                // Use search endpoint if there's a search query
+                // Case 3: Search by term
                 recipes = await searchRecipes(currentSearch);
-            } else if (currentFilter === 'all') {
-                // Get a mix of recipes for "all" filter
-                const trending = await fetchTrendingRecipes();
-                const featured = await fetchFeaturedRecipes();
-                const recommended = await fetchRecommendedRecipes();
-                recipes = [...trending, ...featured, ...recommended];
-            } else {
-                // Get recipes by category for other filters
+            } else if (currentFilter !== 'all') {
+                // Case 2: Filter by category
                 recipes = await getRecipesByCategory(currentFilter);
+                allRecipes = recipes;
+                filteredRecipes = recipes; // Add this line to ensure filtered recipes are set
+                displayRecipes(); // Add this line to display the filtered recipes
+                return; // Add this return to prevent duplicate display
+            } else {
+                // Case 1: No search or filter - fetch alphabetically
+                const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+                for (const letter of letters) {
+                    const letterRecipes = await fetchRecipesByLetter(letter);
+                    recipes = [...recipes, ...letterRecipes];
+                    
+                    // Stop if we have enough recipes
+                    if (recipes.length >= recipesPerPage * 2) {
+                        break;
+                    }
+                }
             }
             
             allRecipes = recipes;
@@ -114,16 +124,31 @@ document.addEventListener('DOMContentLoaded', function() {
         recipesToShow.forEach(recipe => {
             const card = document.createElement('div');
             card.className = 'recipe-card';
+            
+            // Set default image if none provided
+            const imageUrl = recipe.strMealThumb || recipe.image || 
+                            'https://via.placeholder.com/300x200?text=No+Image';
+            
             card.innerHTML = `
-                <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
+                <div class="recipe-card-image">
+                    <img src="${imageUrl}" alt="${recipe.strMeal || recipe.title}" class="recipe-image">
+                </div>
                 <div class="recipe-content">
-                    <h3 class="recipe-title">${recipe.title}</h3>
+                    <h3 class="recipe-title">${recipe.strMeal || recipe.title}</h3>
+                    <div class="recipe-meta">
+                        <span class="recipe-category">${recipe.strCategory || 'Uncategorized'}</span>
+                        <div class="recipe-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-clock stat-icon"></i> ${recipe.cookingTime || 'N/A'} mins
+                            </span>
+                        </div>
+                    </div>
                 </div>
             `;
             
             // Add click handler
             card.addEventListener('click', () => {
-                window.location.href = `recipes.html?id=${recipe.id}`; // Changed from recipe.html to recipes.html
+                window.location.href = `recipes.html?id=${recipe.idMeal || recipe.id}`;
             });
             
             recipesContainer.appendChild(card);
@@ -194,19 +219,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add active class to clicked button
                 this.classList.add('active');
                 
-                // Update filter and search with the filter text
-                currentFilter = 'all'; // Reset the filter since we're using search
-                currentSearch = this.dataset.filter; // Use the filter value as search term
-                
-                // Don't search if it's the "all" button
-                if (currentSearch === 'all') {
-                    currentSearch = '';
-                }
+                // Update filter (don't reset to 'all')
+                currentFilter = this.dataset.filter;
+                currentSearch = ''; // Clear search term
                 
                 // Clear the search input
                 searchInput.value = '';
                 
-                // Fetch recipes with the new search term
+                // Fetch recipes with the new filter
                 fetchRecipes();
             });
         });

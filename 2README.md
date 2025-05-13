@@ -1,16 +1,10 @@
 # This is Whats Left
 
-get meal plan displayed
 get favorites to display
 
 get rating stored
 
 profile picture
-Edit Recipe 
-    configure loading of create recipe form and update/overwrite recipe
-
-    lastly remove the extra filters from the search page ..........
-    =======================================================================
 
 
 rate recipe how to handle

@@ -294,6 +294,33 @@ function formatMealDbRecipe(meal) {
     };
 }
 
+/**
+ * Fetch recipes alphabetically by letter
+ * @param {string} letter - Letter to search by (a-z)
+ * @returns {Promise<Array>} Array of recipe objects
+ */
+async function fetchRecipesByLetter(letter) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/search.php?f=${letter}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch recipes by letter');
+        }
+        const data = await response.json();
+        
+        const recipes = [];
+        if (data.meals && data.meals.length > 0) {
+            data.meals.forEach(meal => {
+                recipes.push(formatMealDbRecipe(meal));
+            });
+        }
+        
+        return recipes;
+    } catch (error) {
+        console.error('Error fetching recipes by letter:', error);
+        return [];
+    }
+}
+
 // Export functions for use in other files
 window.fetchTrendingRecipes = fetchTrendingRecipes;
 window.fetchFeaturedRecipes = fetchFeaturedRecipes;
@@ -302,3 +329,5 @@ window.searchRecipes = searchRecipes;
 window.getRecipeById = getRecipeById;
 window.getRecipesByCategory = getRecipesByCategory;
 window.getCategories = getCategories;
+window.fetchRecipesByLetter = fetchRecipesByLetter;
+

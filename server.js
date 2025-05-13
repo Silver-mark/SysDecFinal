@@ -168,15 +168,23 @@ app.get('/api/recipes/:id', getRecipeById);
 app.put('/api/recipes/:id', updateRecipe);
 app.delete('/api/recipes/:id', deleteRecipe);
 
-// Meal Plan routes
-const { createMealPlan, getUserMealPlans, getMealPlanById, updateMealPlan, deleteMealPlan } = require('./mealPlanController');
+// Add meal plan routes
+const mealPlanController = require('./mealPlanController');
 
-// Meal Plan endpoints
-app.post('/api/meal-plans', createMealPlan);
-app.get('/api/meal-plans/user/:userId', getUserMealPlans);
-app.get('/api/meal-plans/:id', getMealPlanById);
-app.put('/api/meal-plans/:id', updateMealPlan);
-app.delete('/api/meal-plans/:id', deleteMealPlan);
+// Create a new meal plan
+app.post('/api/meal-plans', mealPlanController.createMealPlan);
+
+// Get all meal plans for a user
+app.get('/api/meal-plans/user/:userId', mealPlanController.getUserMealPlans);
+
+// Get a specific meal plan
+app.get('/api/meal-plans/:id', mealPlanController.getMealPlanById);
+
+// Update a meal plan
+app.put('/api/meal-plans/:id', mealPlanController.updateMealPlan);
+
+// Delete a meal plan
+app.delete('/api/meal-plans/:id', mealPlanController.deleteMealPlan);
 
 // Add these new endpoints for admin dashboard
 const Recipe = require('./recipes');

@@ -34,11 +34,9 @@ function initializeTabs() {
     // Initialize tab content loaders with null checks
     const favoritesTab = document.getElementById('favorites-tab');
     const mealplansTab = document.getElementById('mealplans-tab');
-    const collectionsTab = document.getElementById('collections-tab');
     
     if (favoritesTab) favoritesTab.addEventListener('click', () => loadFavorites());
     if (mealplansTab) mealplansTab.addEventListener('click', () => loadMealPlans());
-    if (collectionsTab) collectionsTab.addEventListener('click', () => loadCollections());
 }
 
 function activateTab(selectedTab, tabName) {
@@ -633,118 +631,51 @@ function editRecipe(recipeId) {
 async function loadMealPlans() {
     try {
         const userId = localStorage.getItem('userId');
-        const authToken = localStorage.getItem('authToken');
+        if (!userId) return;
+
+        const response = await fetch(`/api/users/${userId}/meal-plans`);
+        if (!response.ok) throw new Error('Failed to load meal plans');
         
-        if (!userId || !authToken) {
-            console.error('Missing user ID or auth token');
-            return;
-        }
-
-        showLoading('Loading meal plans...');
-        // Change this endpoint to match the backend route
-        const response = await fetch(`/api/meal-plans/user/${userId}`, {
-            headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
-        }
-
         const mealPlans = await response.json();
-        
-        if (!Array.isArray(mealPlans)) {
-            throw new Error('Invalid meal plans data format');
-        }
-
-        // Format the meal plans data as expected
-        const formattedPlans = mealPlans.map(plan => ({
-            _id: plan._id,
-            planName: plan.planName,
-            description: plan.description,
-            days: {
-                monday: { meal: plan.days?.monday?.meal || '' },
-                tuesday: { meal: plan.days?.tuesday?.meal || '' },
-                wednesday: { meal: plan.days?.wednesday?.meal || '' },
-                thursday: { meal: plan.days?.thursday?.meal || '' },
-                friday: { meal: plan.days?.friday?.meal || '' },
-                saturday: { meal: plan.days?.saturday?.meal || '' },
-                sunday: { meal: plan.days?.sunday?.meal || '' }
-            }
-        }));
-
-        displayMealPlans(formattedPlans);
-        hideLoading();
+        displayMealPlans(mealPlans);
     } catch (error) {
         console.error('Error loading meal plans:', error);
-        hideLoading();
-        showError('Failed to load meal plans. Please try again later.');
-        
-        const container = document.getElementById('meal-plans-container');
-        if (container) {
-            container.innerHTML = `
-                <div class="error-state">
-                    <p>Error loading meal plans</p>
-                    <button class="retry-btn" onclick="loadMealPlans()">Retry</button>
-                </div>
-            `;
-        }
+        document.getElementById('meal-plans-grid').innerHTML = 
+            '<p class="error-message">Failed to load meal plans. Please try again later.</p>';
     }
 }
 
 function displayMealPlans(mealPlans) {
     const container = document.getElementById('meal-plans-grid');
     if (!mealPlans || mealPlans.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>You haven't created any meal plans yet.</p>
-                <button id="create-first-mealplan" class="btn primary-btn">
-                    Create Your First Meal Plan
-                </button>
-            </div>
-        `;
-        document.getElementById('create-first-mealplan').addEventListener('click', () => {
-            window.location.href = 'meal-planner.html';
-        });
+        container.innerHTML = '<p>No meal plans found. Create your first one!</p>';
         return;
     }
 
-    container.innerHTML = `
-        <div class="section-header">
-            <h2>Your Meal Plans</h2>
-            <button id="create-mealplan-btn" class="btn primary-btn">
-                Create New Meal Plan
-            </button>
-        </div>
-        <div class="mealplans-grid">
-            ${mealPlans.map(plan => `
-                <div class="mealplan-card" data-id="${plan._id}">
-                    <h3>${plan.planName}</h3>
-                    <p class="mealplan-description">${plan.description || 'No description'}</p>
-                    <div class="mealplan-days">
-                        ${Object.entries(plan.days).map(([day, details]) => `
-                            <div class="mealplan-day">
-                                <strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong>
-                                ${details.meal || 'No meal planned'}
-                            </div>
-                        `).join('')}
+    container.innerHTML = mealPlans.map(plan => `
+        <div class="meal-plan-card">
+            <h3>${plan.planName}</h3>
+            <p>${plan.description || 'No description'}</p>
+            <div class="meal-plan-days">
+                ${Object.keys(plan.days).map(day => `
+                    <div class="meal-plan-day">
+                        <h4>${day.charAt(0).toUpperCase() + day.slice(1)}</h4>
+                        <p>${plan.days[day].meal || 'No meal planned'}</p>
                     </div>
-                    <div class="mealplan-actions">
-                        <button class="btn view-btn" onclick="window.location.href='meal-planner.html?id=${plan._id}'">
-                            View
-                        </button>
-                        <button class="btn edit-btn" onclick="editMealPlan('${plan._id}')">
-                            Edit
-                        </button>
-                        <button class="btn delete-btn" onclick="deleteMealPlan('${plan._id}')">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            `).join('')}
+                `).join('')}
+            </div>
+            <button class="edit-meal-plan-btn" data-id="${plan._id}">Edit</button>
         </div>
-    `;
+    `).join('');
+
+    // Add event listeners to all edit buttons
+    document.querySelectorAll('.edit-meal-plan-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const planId = button.dataset.id;
+            window.location.href = `meal-planner.html?id=${planId}`;
+        });
+    });
 }
 // Load user favorites
 async function loadFavorites() {
@@ -827,101 +758,6 @@ async function loadFavorites() {
     }
 }
 
-// Load user collections
-async function loadCollections() {
-    try {
-        const userId = localStorage.getItem('userId');
-        const authToken = localStorage.getItem('authToken');
-        
-        if (!userId || !authToken) {
-            return;
-        }
-        
-        const collectionsContainer = document.getElementById('collections');
-        if (!collectionsContainer) return;
-        
-        collectionsContainer.innerHTML = '<div class="loading">Loading collections...</div>';
-        
-        const response = await fetch(`/api/users/${userId}/collections`, {
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch collections');
-        }
-        
-        const data = await response.json();
-        
-        if (!data.collections || data.collections.length === 0) {
-            collectionsContainer.innerHTML = `
-                <div class="empty-state">
-                    <p>You haven't created any collections yet.</p>
-                    <button id="create-collection-btn" class="btn primary-btn">Create Collection</button>
-                </div>
-            `;
-            
-            const createButton = document.getElementById('create-collection-btn');
-            if (createButton) {
-                createButton.addEventListener('click', () => {
-                    // Open create collection modal or redirect to collection creation page
-                    alert('Collection creation feature coming soon!');
-                });
-            }
-            return;
-        }
-        
-        // Display collections
-        let html = `
-            <div class="section-header">
-                <h2>Your Collections</h2>
-                <button id="create-collection-btn" class="btn primary-btn">Create Collection</button>
-            </div>
-            <div class="collections-grid">
-        `;
-        
-        data.collections.forEach(collection => {
-            html += `
-                <div class="collection-card">
-                    <h3 class="collection-title">${collection.name}</h3>
-                    <p class="collection-description">${collection.description || 'No description provided.'}</p>
-                    <div class="collection-meta">
-                        <span>${collection.recipes.length} recipes</span>
-                    </div>
-                    <div class="collection-actions">
-                        <button class="btn view-btn" onclick="viewCollection('${collection._id}')">View</button>
-                        <button class="btn edit-btn" onclick="editCollection('${collection._id}')">Edit</button>
-                        <button class="btn delete-btn" onclick="deleteCollection('${collection._id}')">Delete</button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        collectionsContainer.innerHTML = html;
-        
-        // Set up create collection button
-        const createButton = document.getElementById('create-collection-btn');
-        if (createButton) {
-            createButton.addEventListener('click', () => {
-                // Open create collection modal or redirect to collection creation page
-                alert('Collection creation feature coming soon!');
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error loading collections:', error);
-        const collectionsContainer = document.getElementById('collections');
-        if (collectionsContainer) {
-            collectionsContainer.innerHTML = `
-                <div class="error-message">
-                    <p>Failed to load collections. Please try again later.</p>
-                </div>
-            `;
-        }
-    }
-}
 
 // View meal plan details
 function viewMealPlan(planId) {
@@ -956,45 +792,5 @@ async function deleteMealPlan(planId) {
     }
 }
 
-async function loadMealPlans() {
-    try {
-        const userId = localStorage.getItem('userId');
-        if (!userId) return;
-
-        const response = await fetch(`/api/users/${userId}/meal-plans`);
-        if (!response.ok) throw new Error('Failed to load meal plans');
-        
-        const mealPlans = await response.json();
-        displayMealPlans(mealPlans);
-    } catch (error) {
-        console.error('Error loading meal plans:', error);
-        document.getElementById('meal-plans-grid').innerHTML = 
-            '<p class="error-message">Failed to load meal plans. Please try again later.</p>';
-    }
-}
-
-function displayMealPlans(mealPlans) {
-    const container = document.getElementById('meal-plans-grid');
-    if (!mealPlans || mealPlans.length === 0) {
-        container.innerHTML = '<p>No meal plans found. Create your first one!</p>';
-        return;
-    }
-
-    container.innerHTML = mealPlans.map(plan => `
-        <div class="meal-plan-card">
-            <h3>${plan.planName}</h3>
-            <p>${plan.description || 'No description'}</p>
-            <div class="meal-plan-days">
-                ${Object.keys(plan.days).map(day => `
-                    <div class="meal-plan-day">
-                        <h4>${day.charAt(0).toUpperCase() + day.slice(1)}</h4>
-                        <p>${plan.days[day].meal || 'No meal planned'}</p>
-                    </div>
-                `).join('')}
-            </div>
-            <button class="edit-meal-plan-btn" data-id="${plan._id}">Edit</button>
-        </div>
-    `).join('');
-}
 
 
