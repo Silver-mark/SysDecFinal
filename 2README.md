@@ -11,9 +11,7 @@ Edit Recipe
 
     lastly remove the extra filters from the search page ..........
     =======================================================================
-    =======================================================================
-    ========================================================
-    ====================================================
+
 
 rate recipe how to handle
 counter and ticker display on admin page from rate recipe

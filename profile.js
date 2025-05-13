@@ -549,7 +549,7 @@ function loadUserRecipes() {
                         <p class="recipe-description">${recipe.description}</p>
                         <div class="recipe-actions">
                             <a href="recipes.html?id=${recipe._id}" class="view-btn">View</a>
-                            <a href="edit-recipe.html?id=${recipe._id}" class="edit-btn">Edit</a>
+                            <a href="create-recipe.html?edit=${recipe._id}" class="edit-btn">Edit</a>
                         </div>
                     </div>
                 `;
@@ -623,6 +623,11 @@ function displayUserRecipes(recipes) {
     
     // Set up the create recipe button again
     setupCreateRecipeButton();
+}
+
+// Add this new function to handle recipe editing
+function editRecipe(recipeId) {
+    window.location.href = `create-recipe.html?edit=${recipeId}`;
 }
 
 async function loadMealPlans() {

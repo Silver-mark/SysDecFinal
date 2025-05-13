@@ -8,10 +8,33 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeForm();
 });
 
-function initializeForm() {
+async function initializeForm() {
     const form = document.getElementById('recipe-form');
     const addIngredientBtn = document.getElementById('add-ingredient');
     const addInstructionBtn = document.getElementById('add-instruction');
+
+    // Check if we're editing an existing recipe
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipeId = urlParams.get('edit');
+    
+    if (recipeId) {
+        // Load existing recipe data
+        try {
+            const response = await fetch(`/api/recipes/${recipeId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+            
+            if (response.ok) {
+                const recipe = await response.json();
+                populateFormWithRecipeData(recipe);
+                document.querySelector('.create-recipe-title').textContent = 'Edit Recipe';
+            }
+        } catch (error) {
+            console.error('Error loading recipe:', error);
+        }
+    }
 
     // Set up event listeners
     form.addEventListener('submit', handleSubmit);
@@ -20,6 +43,45 @@ function initializeForm() {
 
     // Set up initial remove buttons
     setupRemoveButtons();
+}
+
+function populateFormWithRecipeData(recipe) {
+    // Set basic fields
+    document.getElementById('title').value = recipe.title;
+    document.getElementById('description').value = recipe.description;
+    document.getElementById('cookTime').value = recipe.cookingTime;
+    document.getElementById('servings').value = recipe.servings;
+    
+    // Set visibility
+    const publicRadio = document.querySelector('input[name="visibility"][value="public"]');
+    const privateRadio = document.querySelector('input[name="visibility"][value="private"]');
+    if (recipe.isPublic) {
+        publicRadio.checked = true;
+    } else {
+        privateRadio.checked = true;
+    }
+
+    // Clear existing ingredients and instructions
+    document.getElementById('ingredients-list').innerHTML = '';
+    document.getElementById('instructions-list').innerHTML = '';
+
+    // Add ingredients
+    recipe.ingredients.forEach(ingredient => {
+        addIngredientRow();
+        const rows = document.querySelectorAll('.ingredient-row');
+        const lastRow = rows[rows.length - 1];
+        lastRow.querySelector('input[name="ingredients[]"]').value = ingredient.name;
+        lastRow.querySelector('input[name="amounts[]"]').value = ingredient.amount;
+        lastRow.querySelector('input[name="units[]"]').value = ingredient.unit;
+    });
+
+    // Add instructions
+    recipe.instructions.forEach(instruction => {
+        addInstructionRow();
+        const rows = document.querySelectorAll('.instruction-row');
+        const lastRow = rows[rows.length - 1];
+        lastRow.querySelector('textarea[name="instructions[]"]').value = instruction.text;
+    });
 }
 
 function addIngredientRow() {
@@ -76,16 +138,19 @@ async function handleSubmit(event) {
     
     try {
         const formData = new FormData(event.target);
+        const urlParams = new URLSearchParams(window.location.search);
+        const recipeId = urlParams.get('edit');
+        
         const recipe = {
             title: formData.get('title'),
             description: formData.get('description'),
-            cookingTime: parseInt(formData.get('cookTime')), // Match server's expected field name
+            cookingTime: parseInt(formData.get('cookTime')),
             servings: parseInt(formData.get('servings')),
             isPublic: formData.get('visibility') === 'public',
             ingredients: [],
             instructions: [],
             userId: localStorage.getItem('userId'),
-            difficulty: 'medium', // Add required server fields
+            difficulty: 'medium',
             cuisine: 'other'
         };
 
@@ -115,14 +180,12 @@ async function handleSubmit(event) {
             }
         });
 
-        // Validate recipe
-        if (!validateRecipe(recipe)) {
-            return;
-        }
+        // Determine if we're creating or updating
+        const url = recipeId ? `/api/recipes/${recipeId}` : '/api/recipes';
+        const method = recipeId ? 'PUT' : 'POST';
 
-        // Send to server
-        const response = await fetch('/api/recipes', {
-            method: 'POST',
+        const response = await fetch(url, {
+            method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('authToken')}`
@@ -131,27 +194,19 @@ async function handleSubmit(event) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create recipe');
+            throw new Error(recipeId ? 'Failed to update recipe' : 'Failed to create recipe');
         }
 
-        // Get the created recipe ID from response
-        const createdRecipe = await response.json();
-        const recipeId = createdRecipe._id;
-
-        // Show success popup with recipe ID in a more prominent format
-        showSuccess(`Recipe created successfully!\nRecipe ID: ${recipeId}\n\nRedirecting to profile page...`);
-
-        // Update user profile and redirect
-        await updateUserProfileWithRecipe(recipeId);
-
-        // Redirect to profile page after a short delay
+        const result = await response.json();
+        showSuccess(recipeId ? 'Recipe updated successfully!' : 'Recipe created successfully!');
+        
         setTimeout(() => {
             window.location.href = 'profile.html';
         }, 2000);
 
     } catch (error) {
-        console.error('Error creating recipe:', error);
-        showError('Failed to create recipe. Please try again.');
+        console.error('Error:', error);
+        showError(error.message);
     }
 }
 
