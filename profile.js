@@ -1,5 +1,8 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Profile page loaded');
+
     
     // Check if user is logged in
     if (!localStorage.getItem('userId') || !localStorage.getItem('authToken')) {
@@ -17,8 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeTabs();
     setupProfileEditButton();
     setupCreateRecipeButton();
+    document.getElementById('logout-btn').addEventListener('click', logout);
     loadInitialTab();
 });
+
+function logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userProfile');
+    window.location.href = 'signin.html';
+}
 
 function initializeTabs() {
     const tabs = document.querySelectorAll('.tab');
@@ -27,17 +38,28 @@ function initializeTabs() {
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const tabName = tab.dataset.tab;
-            if (tabName) activateTab(tab, tabName);
+            if (tabName) {
+                activateTab(tab, tabName);
+                // Remove the specific favorites check here
+            }
         });
     });
-
-    // Initialize tab content loaders with null checks
-    const favoritesTab = document.getElementById('favorites-tab');
-    const mealplansTab = document.getElementById('mealplans-tab');
-    
-    if (favoritesTab) favoritesTab.addEventListener('click', () => loadFavorites());
-    if (mealplansTab) mealplansTab.addEventListener('click', () => loadMealPlans());
 }
+
+function loadTabContent(tabName) {
+    switch(tabName) {
+        case 'favorites':
+            loadFavorites();
+            break;
+        case 'my-recipes':
+            loadUserRecipes();
+            break;
+        case 'meal-plans':
+            loadMealPlans();
+            break;
+    }
+}
+
 
 function activateTab(selectedTab, tabName) {
     // Update tab styles
@@ -485,17 +507,6 @@ async function loadUserRecipes() {
     }
 }
 
-function loadTabContent(tabName) {
-    console.log(`Loading content for tab: ${tabName}`);
-    
-    if (tabName === 'my-recipes') {
-        loadUserRecipes();
-    } else if (tabName === 'favorites') {
-        loadFavorites();
-    } else if (tabName === 'meal-plans') {
-        loadMealPlans();
-    }
-}
 
 function loadUserRecipes() {
     const userId = localStorage.getItem('userId');
@@ -544,8 +555,9 @@ function loadUserRecipes() {
                         </div>
                         <p class="recipe-description">${recipe.description}</p>
                         <div class="recipe-actions">
-                            <a href="recipes.html?id=${recipe._id}" class="view-btn">View</a>
-                            <a href="create-recipe.html?edit=${recipe._id}" class="edit-btn">Edit</a>
+                            <button class="btn view-btn" onclick="window.location.href='recipes.html?id=${recipe._id}'">View</button>
+                        <button class="btn edit-btn" onclick="editRecipe('${recipe._id}')">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteRecipe('${recipe._id}')">Delete</button>
                         </div>
                     </div>
                 `;
@@ -662,7 +674,10 @@ function displayMealPlans(mealPlans) {
                     </div>
                 `).join('')}
             </div>
-            <button class="edit-meal-plan-btn" data-id="${plan._id}">Edit</button>
+            <div class="meal-plan-actions">
+                <button class="edit-meal-plan-btn" data-id="${plan._id}">Edit</button>
+                <button class="delete-meal-plan-btn" data-id="${plan._id}">Delete</button>
+            </div>
         </div>
     `).join('');
 
@@ -674,136 +689,201 @@ function displayMealPlans(mealPlans) {
             window.location.href = `meal-planner.html?id=${planId}`;
         });
     });
+        // Add delete button event listeners
+        document.querySelectorAll('.delete-meal-plan-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const mealPlanId = e.target.dataset.id;
+                if (confirm('Are you sure you want to delete this meal plan?')) {
+                    try {
+                        const response = await fetch(`/api/meal-plans/${mealPlanId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userId: localStorage.getItem('userId')
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to delete meal plan');
+                        }
+                        
+                        const result = await response.json();
+                        console.log('Delete result:', result);
+                        
+                        // Reload the meal plans
+                        await loadMealPlans();
+                        showSuccess('Meal plan deleted successfully');
+                    } catch (error) {
+                        console.error('Error deleting meal plan:', error);
+                        showError(error.message || 'Failed to delete meal plan');
+                    }
+                }
+            });
+        });
 }
 // Load user favorites
 async function loadFavorites() {
     try {
         const userId = localStorage.getItem('userId');
         const authToken = localStorage.getItem('authToken');
+        const favoritesContainer = document.getElementById('favorites-container');
         
         if (!userId || !authToken) {
+            window.location.href = 'signin.html';
             return;
         }
+
+        favoritesContainer.innerHTML = '<div class="loading-spinner"></div>';
         
-        const favoritesContainer = document.getElementById('favorites');
-        if (!favoritesContainer) return;
-        
-        favoritesContainer.innerHTML = '<div class="loading">Loading favorites...</div>';
-        
-        // Fetch user data
-        const response = await fetch(`/api/users/${userId}`, {
+        // First fetch user data to get favorites array
+        const userResponse = await fetch(`/api/users/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
         
-        if (!response.ok) {
+        if (!userResponse.ok) {
             throw new Error('Failed to fetch user data');
         }
         
-        const userData = await response.json();
+        const userData = await userResponse.json();
+        const favorites = userData.favorites || userData.profileData?.favorites || [];
         
-        if (!userData.favorites || userData.favorites.length === 0) {
-            favoritesContainer.innerHTML = `
-                <div class="empty-state">
-                    <p>You haven't added any favorites yet.</p>
-                    <a href="recipes-list.html" class="btn primary-btn">Browse Recipes</a>
-                </div>
-            `;
+        if (favorites.length === 0) {
+            favoritesContainer.innerHTML = '<div class="empty-message">No favorite recipes found</div>';
+            return;
+        }
+
+        // Fetch details for each favorite recipe
+        const recipePromises = favorites.map(id => 
+            fetch(`/api/recipes/${id}`)
+                .then(res => res.ok ? res.json() : null)
+                .catch(() => null)
+        );
+        
+        const recipes = (await Promise.all(recipePromises)).filter(Boolean);
+        
+        if (recipes.length === 0) {
+            favoritesContainer.innerHTML = '<div class="empty-message">No favorite recipes found</div>';
             return;
         }
         
-        // Now we need to fetch details for each favorite recipe ID
-        const favoriteRecipes = [];
-        for (const recipeId of userData.favorites) {
-            try {
-                const recipeResponse = await fetch(`/api/recipes/${recipeId}`);
-                if (recipeResponse.ok) {
-                    const recipe = await recipeResponse.json();
-                    favoriteRecipes.push(recipe);
-                }
-            } catch (error) {
-                console.error(`Error fetching recipe ${recipeId}:`, error);
-            }
-        }
-        
-        // Display favorites
-        let html = `
-            <div class="section-header">
-                <h2>Your Favorite Recipes</h2>
-            </div>
-            <div class="recipes-grid">
-        `;
-        
-        favoriteRecipes.forEach(recipe => {
-            html += `
-                <div class="recipe-card">
-                    <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=Recipe'}" alt="${recipe.title}" class="recipe-image">
-                    <div class="recipe-content">
-                        <h3 class="recipe-title">${recipe.title}</h3>
-                        <p class="recipe-description">${recipe.description || 'No description provided.'}</p>
-                        <div class="recipe-meta">
-                            <span class="recipe-time">${recipe.cookingTime || 0} mins</span>
-                            <span class="recipe-difficulty">${recipe.difficulty || 'Easy'}</span>
-                        </div>
-                        <div class="recipe-actions">
-                            <button class="btn view-btn" onclick="window.location.href='recipe.html?id=${recipe._id}'">View</button>
-                            <button class="btn remove-btn" onclick="removeFromFavorites('${recipe._id}')">Remove</button>
-                        </div>
-                    </div>
+        // Display the recipes
+        favoritesContainer.innerHTML = '';
+        recipes.forEach(recipe => {
+            const card = document.createElement('div');
+            card.className = 'recipe-card';
+            card.innerHTML = `
+                <div class="recipe-card-image">
+                    <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                         alt="${recipe.title}">
+                </div>
+                <div class="recipe-card-content">
+                    <h3 class="recipe-card-title">${recipe.title}</h3>
+                    <p class="recipe-card-description">${recipe.description || ''}</p>
                 </div>
             `;
+            favoritesContainer.appendChild(card);
         });
-        
-        html += '</div>';
-        favoritesContainer.innerHTML = html;
         
     } catch (error) {
         console.error('Error loading favorites:', error);
-        const favoritesContainer = document.getElementById('favorites');
-        if (favoritesContainer) {
-            favoritesContainer.innerHTML = `
-                <div class="error-message">
-                    <p>Failed to load favorites. Please try again later.</p>
-                </div>
-            `;
-        }
+        document.getElementById('favorites-container').innerHTML = 
+            '<p class="error-message">Failed to load favorite recipes</p>';
     }
 }
 
+function displayFavoriteRecipes(recipes) {
+    const container = document.getElementById('favorites-container');
+    if (!container) return;
+
+    if (recipes.length === 0) {
+        container.innerHTML = '<div class="empty-state">No favorite recipes found.</div>';
+        return;
+    }
+
+    container.innerHTML = recipes.map(recipe => `
+        <div class="recipe-card" data-recipe-id="${recipe._id || recipe.id}">
+            <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                 alt="${recipe.title}" 
+                 class="recipe-image">
+            <div class="recipe-content">
+                <h3 class="recipe-title">${recipe.title}</h3>
+                <div class="recipe-meta">
+                    <span>${recipe.difficulty || 'Medium'} • ${recipe.cookingTime || 30} mins</span>
+                </div>
+                <p class="recipe-description">${recipe.description || ''}</p>
+            </div>
+        </div>
+    `).join('');
+
+    // Add click handlers to recipe cards
+    container.querySelectorAll('.recipe-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const recipeId = card.dataset.recipeId;
+            window.location.href = `recipes.html?id=${recipeId}`;
+        });
+    });
+}
 
 // View meal plan details
 function viewMealPlan(planId) {
     window.location.href = `meal-plan.html?id=${planId}`;
 }
 
-// Delete meal plan
-async function deleteMealPlan(planId) {
-    if (!confirm('Are you sure you want to delete this meal plan?')) {
-        return;
-    }
-    
+
+// Add this function to handle recipe deletion
+async function deleteRecipe(recipeId) {
     try {
-        const authToken = localStorage.getItem('authToken');
-        const response = await fetch(`/api/meal-plans/${planId}`, {
+        const response = await fetch(`/api/recipes/${recipeId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${authToken}`
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
             }
         });
         
-        if (!response.ok) {
-            throw new Error('Failed to delete meal plan');
+        if (response.ok) {
+            loadUserRecipes(); // Refresh the list
+        } else {
+            console.error('Failed to delete recipe');
         }
-        
-        // Reload meal plans after deletion
-        loadMealPlans();
-        showSuccess('Meal plan deleted successfully');
     } catch (error) {
-        console.error('Error deleting meal plan:', error);
-        showError('Failed to delete meal plan');
+        console.error('Error deleting recipe:', error);
     }
 }
 
 
+function displayMealDBRecipes(recipes, container) {
+    container.innerHTML = '';
+    
+    recipes.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        
+        card.innerHTML = `
+            <div class="recipe-card-image">
+                <img src="${recipe.strMealThumb || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                     alt="${recipe.strMeal}" 
+                     class="recipe-image">
+            </div>
+            <div class="recipe-card-content">
+                <h3 class="recipe-card-title">${recipe.strMeal}</h3>
+                <div class="recipe-card-meta">
+                    <span>${recipe.strCategory || 'Unknown'}</span>
+                    <span>${recipe.strArea || 'Unknown'}</span>
+                </div>
+            </div>
+        `;
+        
+        card.addEventListener('click', () => {
+            window.location.href = `recipes.html?id=${recipe.idMeal}`;
+        });
+        
+        container.appendChild(card);
+    });
+}
 

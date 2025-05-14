@@ -224,35 +224,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Favorite button click handler
-        favoriteBtn.addEventListener('click', async function() {
-            const userId = localStorage.getItem('userId');
-            
-            if (!userId) {
-                showToast('Please log in to favorite recipes');
-                return;
-            }
-            
+        favoriteBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch(`/api/recipe-records/${recipeId}/favorite`, {
-                    method: 'POST',
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    showError('Please sign in to add favorites');
+                    return;
+                }
+
+                // First fetch the current user data to get existing favorites
+                const userResponse = await fetch(`/api/users/${userId}`, {
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId })
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
                 });
-                
-                if (response.ok) {
-                    const { favorited, message } = await response.json();
-                    
-                    // Update favorite button
-                    updateFavoriteButton(favorited);
-                    
-                    // Show toast message
-                    showToast(message);
+
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+
+                const userData = await userResponse.json();
+                let favorites = userData.profileData?.favorites || [];
+
+                // Check if recipe is already in favorites
+                const isFavorite = favorites.includes(recipeId);
+                let updatedFavorites;
+
+                if (isFavorite) {
+                    // Remove from favorites
+                    updatedFavorites = favorites.filter(id => id !== recipeId);
+                } else {
+                    // Add to favorites
+                    updatedFavorites = [...favorites, recipeId];
+                }
+
+                // Update the user's favorites
+                const updateResponse = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({
+                        favorites: updatedFavorites
+                    })
+                });
+
+                if (updateResponse.ok) {
+                    // Update button UI
+                    const heartIcon = favoriteBtn.querySelector('i');
+                    if (!isFavorite) {
+                        heartIcon.classList.remove('far');
+                        heartIcon.classList.add('fas');
+                        favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';
+                        showToast('Added to favorites!');
+                    } else {
+                        heartIcon.classList.remove('fas');
+                        heartIcon.classList.add('far');
+                        favoriteBtn.querySelector('span').textContent = 'Add to Favorites';
+                        showToast('Removed from favorites!');
+                    }
+                } else {
+                    throw new Error('Failed to update favorites');
                 }
             } catch (error) {
-                console.error('Error updating favorite status:', error);
-                showToast('Error updating favorite status');
+                console.error('Error updating favorites:', error);
+                showError('Failed to update favorites');
             }
         });
         
@@ -391,21 +430,51 @@ document.addEventListener('DOMContentLoaded', function() {
                     showError('Please sign in to add favorites');
                     return;
                 }
-    
-                const response = await fetch(`/api/users/${userId}`, {
+
+                // First fetch the current user data to get existing favorites
+                const userResponse = await fetch(`/api/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+
+                const userData = await userResponse.json();
+                let favorites = userData.profileData?.favorites || [];
+
+                // Check if recipe is already in favorites
+                const isFavorite = favorites.includes(recipeId);
+                let updatedFavorites;
+
+                if (isFavorite) {
+                    // Remove from favorites
+                    updatedFavorites = favorites.filter(id => id !== recipeId);
+                } else {
+                    // Add to favorites
+                    updatedFavorites = [...favorites, recipeId];
+                }
+
+                // Update the user's favorites
+                const updateResponse = await fetch(`/api/users/${userId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     },
                     body: JSON.stringify({
-                        favorites: [recipe._id] // Send the recipe ID in an array
+                        favorites: updatedFavorites
                     })
                 });
-    
-                if (response.ok) {
+
+                if (updateResponse.ok) {
+                    // Update button UI
                     const heartIcon = favoriteBtn.querySelector('i');
-                    if (heartIcon.classList.contains('far')) {
+                    if (!isFavorite) {
                         heartIcon.classList.remove('far');
                         heartIcon.classList.add('fas');
                         favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';

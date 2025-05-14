@@ -1,7 +1,9 @@
+const express = require('express');
+const router = express.Router();
 const MealPlan = require('./MealPlan');
 
-// Create a new meal plan
-exports.createMealPlan = async (req, res) => {
+// Create meal plan
+router.post('/', async (req, res) => {
     try {
         const { planName, description, days } = req.body;
         
@@ -32,10 +34,10 @@ exports.createMealPlan = async (req, res) => {
             message: 'Error creating meal plan' 
         });
     }
-};
+});
 
 // Get all meal plans for a user
-exports.getUserMealPlans = async (req, res) => {
+router.get('/user/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         
@@ -53,10 +55,11 @@ exports.getUserMealPlans = async (req, res) => {
             message: 'Error fetching meal plans' 
         });
     }
-};
+});
 
 // Get a specific meal plan by ID
-exports.getMealPlanById = async (req, res) => {
+// Change from exports.getMealPlanById to router.get
+router.get('/:id', async (req, res) => {
     try {
         const mealPlanId = req.params.id;
         
@@ -80,10 +83,11 @@ exports.getMealPlanById = async (req, res) => {
             message: 'Error fetching meal plan' 
         });
     }
-};
+});
 
 // Update a meal plan
-exports.updateMealPlan = async (req, res) => {
+// Change from exports.updateMealPlan to router.put
+router.put('/:id', async (req, res) => {
     try {
         const mealPlanId = req.params.id;
         const updates = req.body;
@@ -122,10 +126,10 @@ exports.updateMealPlan = async (req, res) => {
             message: 'Error updating meal plan' 
         });
     }
-};
+});
 
 // Delete a meal plan
-exports.deleteMealPlan = async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const mealPlanId = req.params.id;
         
@@ -159,4 +163,6 @@ exports.deleteMealPlan = async (req, res) => {
             message: 'Error deleting meal plan' 
         });
     }
-};
+});
+
+module.exports = router;

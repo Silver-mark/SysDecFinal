@@ -98,36 +98,26 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(`/api/meal-plans/${id}`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                    'Content-Type': 'application/json'
                 }
             });
             
-            if (!response.ok) throw new Error('Failed to load meal plan');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to load meal plan');
+            }
             
             const result = await response.json();
             
-            // Extract the mealPlan object from the response
-            const mealPlan = result.mealPlan;
-            
-            if (!mealPlan) {
+            if (!result.success || !result.mealPlan) {
                 throw new Error('Invalid meal plan data structure');
             }
             
-            // Ensure days object exists and has proper structure
-            if (!mealPlan.days) {
-                mealPlan.days = {
-                    monday: { meal: '', ingredients: [], instructions: '' },
-                    tuesday: { meal: '', ingredients: [], instructions: '' },
-                    wednesday: { meal: '', ingredients: [], instructions: '' },
-                    thursday: { meal: '', ingredients: [], instructions: '' },
-                    friday: { meal: '', ingredients: [], instructions: '' }
-                };
-            }
-            
-            populateForm(mealPlan);
+            populateForm(result.mealPlan);
         } catch (error) {
             console.error('Error loading meal plan:', error);
-            alert('Failed to load meal plan. Please try again.');
+            alert(`Error loading meal plan: ${error.message}`);
         }
     }
 

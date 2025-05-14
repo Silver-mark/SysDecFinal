@@ -36,7 +36,10 @@ const userSchema = mongoose.Schema(
         created: [{ type: String }],
         mealPlans: [{ type: String }],
         rated: [{ type: String }],
-        favorites: [{ type: String }],
+        favorites: {
+          type: [String],
+          default: []
+        },
         preferences: {
           cuisines: [{ type: String }],
           diet: { type: String, default: 'none' },
@@ -47,10 +50,10 @@ const userSchema = mongoose.Schema(
       default: {
         bio: '',
         avatar: null,
-        created: [''],
-        mealPlans: [''],
-        rated: [''],
-        favorites: ['53062'],
+        created: [],
+        mealPlans: [],
+        rated: [],
+        favorites: [],
         preferences: {
           cuisines: [],
           diet: 'none',

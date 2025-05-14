@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="navigation.css">
     <link rel="stylesheet" href="footer.css">
+    <script type="module" src="profile.js"></script>
+    <script type="module" src="mealdb-api.js"></script>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -28,6 +30,10 @@
             </div>
             <div class="user-actions">
                 <a href="profile.html" class="profile-link active">My Profile</a>
+                <button id="logout-btn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
             </div>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -72,9 +78,11 @@
             </div>
             
             <div id="favorites" class="tab-content">
-                <h2>Favorite Recipes</h2>
-                <div id="favorite-recipes">
-                    <p class="loading-message">Loading your favorites...</p>
+                <h2 class="content-title">Favorite Recipes</h2>
+                <div class="recipe-container">
+                    <div class="recipe-scroll" id="favorites-container">
+                        <div class="loading-message">Loading your favorite recipes...</div>
+                    </div>
                 </div>
             </div>
             

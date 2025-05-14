@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const { OAuth2Client } = require('google-auth-library');
 const connectDB = require('./db');
 const User = require('./User');
+const MealPlan = require('./MealPlan');  // Add this line
 const multer = require('multer');
 const RecipeRecord = require('./recipeRecord');
 
@@ -29,16 +30,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5000',
+  credentials: true
+}));
 app.use(bodyParser.json({ limit: '50mb' })); // Increased limit for image uploads
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
 // Import routes
 const userRoutes = require('./userRoutes');
+const mealPlanRoutes = require('./mealPlanController');  // This should import a router instance
+const mealPlanController = require('./mealPlanController');
 
 // Mount routes
 app.use('/api', userRoutes);
+app.use('/api/meal-plans', mealPlanRoutes);  // Add this line
 
 // Simple root route
 app.get('/', (req, res) => {
@@ -104,12 +113,12 @@ app.put('/api/users/:userId', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update profile data
+        // Update profile data - including favorites array
         user.profileData = {
             ...user.profileData,
             bio: userData.bio || user.profileData?.bio,
             avatar: userData.profileImage || user.profileData?.avatar,
-            favorites: userData.favorites || user.profileData?.favorites // Missing this line
+            favorites: userData.favorites || user.profileData?.favorites
         };
 
         // Update basic user info if provided
@@ -118,14 +127,13 @@ app.put('/api/users/:userId', async (req, res) => {
         
         const updatedUser = await user.save();
         
-        console.log('Updated user:', updatedUser);
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
             bio: user.profileData?.bio || '',
             profileImage: user.profileData?.avatar,
-            favorites: user.profileData?.favorites // Add favorites array
+            favorites: user.profileData?.favorites || []
         });
     } catch (error) {
         console.error('Error updating user:', error);
@@ -233,23 +241,48 @@ app.get('/api/recipes/:id', getRecipeById);
 app.put('/api/recipes/:id', updateRecipe);
 app.delete('/api/recipes/:id', deleteRecipe);
 
-// Add meal plan routes
-const mealPlanController = require('./mealPlanController');
 
-// Create a new meal plan
-app.post('/api/meal-plans', mealPlanController.createMealPlan);
+// Add these new endpoints after the existing recipe routes
+app.delete('/api/recipes/:id', async (req, res) => {
+    try {
+        const recipe = await Recipe.findByIdAndDelete(req.params.id);
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+        res.json({ success: true, message: 'Recipe deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        res.status(500).json({ message: 'Error deleting recipe' });
+    }
+});
 
-// Get all meal plans for a user
-app.get('/api/meal-plans/user/:userId', mealPlanController.getUserMealPlans);
-
-// Get a specific meal plan
-app.get('/api/meal-plans/:id', mealPlanController.getMealPlanById);
-
-// Update a meal plan
-app.put('/api/meal-plans/:id', mealPlanController.updateMealPlan);
-
-// Delete a meal plan
-app.delete('/api/meal-plans/:id', mealPlanController.deleteMealPlan);
+// Add this after other meal plan routes
+app.delete('/api/mealplans/:id', async (req, res) => {
+    try {
+        const mealPlan = await MealPlan.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user._id // Ensure user owns this meal plan
+        });
+        
+        if (!mealPlan) {
+            return res.status(404).json({ 
+                message: 'Meal plan not found or not owned by user',
+                details: {
+                    requestedId: req.params.id,
+                    userId: req.user._id
+                }
+            });
+        }
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ 
+            message: 'Database operation failed',
+            error: error.message 
+        });
+    }
+});
 
 // Add these new endpoints for admin dashboard
 const Recipe = require('./recipes');
@@ -685,5 +718,140 @@ app.get('/api/recipe-records/:recipeId/user/:userId/status', async (req, res) =>
   } catch (error) {
     console.error('Error checking user status:', error);
     res.status(500).json({ message: 'Error checking user status' });
+  }
+});
+
+// Add to favorites
+app.post('/api/users/:userId/favorites/:recipeId', async (req, res) => {
+    try {
+        const { userId, recipeId } = req.params;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Add recipe to favorites if not already there
+        if (!user.profileData.favorites.includes(recipeId)) {
+            user.profileData.favorites.push(recipeId);
+            await user.save();
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error adding favorite:', error);
+        res.status(500).json({ message: 'Error adding favorite' });
+    }
+});
+
+// Remove from favorites
+app.delete('/api/users/:userId/favorites/:recipeId', async (req, res) => {
+    try {
+        const { userId, recipeId } = req.params;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Remove recipe from favorites
+        user.profileData.favorites = user.profileData.favorites.filter(
+            id => id.toString() !== recipeId
+        );
+        
+        await user.save();
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing favorite:', error);
+        res.status(500).json({ message: 'Error removing favorite' });
+    }
+});
+
+// Add this new endpoint for favorites
+app.post('/api/users/:userId/favorites', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { recipeId, action } = req.body;
+        
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Initialize favorites array if it doesn't exist
+        if (!user.profileData.favorites) {
+            user.profileData.favorites = [];
+        }
+
+        // Handle toggle action
+        if (action === 'toggle') {
+            const index = user.profileData.favorites.indexOf(recipeId);
+            if (index === -1) {
+                // Add to favorites
+                user.profileData.favorites.push(recipeId);
+            } else {
+                // Remove from favorites
+                user.profileData.favorites.splice(index, 1);
+            }
+        }
+
+        await user.save();
+        
+        res.json({
+            favorited: user.profileData.favorites.includes(recipeId),
+            message: user.profileData.favorites.includes(recipeId) 
+                ? 'Added to favorites' 
+                : 'Removed from favorites'
+        });
+    } catch (error) {
+        console.error('Error updating favorites:', error);
+        res.status(500).json({ message: 'Error updating favorites' });
+    }
+});
+
+// Add this endpoint to server.js  Could not retrieve recipe
+
+// Add this new endpoint for getting a single recipe by ID
+app.get('/api/recipes/:id', async (req, res) => {
+    try {
+        const Recipe = require('./recipes');
+        const recipe = await Recipe.findById(req.params.id);
+        
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+        
+        res.json(recipe);
+    } catch (error) {
+        console.error('Error fetching recipe:', error);
+        res.status(500).json({ message: 'Error fetching recipe' });
+    }
+});
+
+app.get('/api/recipes/:id', async (req, res) => {
+  try {
+      const recipeId = req.params.id;
+      
+      // First try to find in local database
+      const localRecipe = await Recipe.findById(recipeId);
+      if (localRecipe) {
+          return res.json(localRecipe);
+      }
+      
+      // If not found locally, try MealDB API
+      if (/^\d+$/.test(recipeId)) { // Check if it's a numeric ID
+          const mealDbResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipeId}`);
+          if (mealDbResponse.ok) {
+              const data = await mealDbResponse.json();
+              if (data.meals && data.meals.length > 0) {
+                  return res.json(data.meals[0]);
+              }
+          }
+      }
+      
+      res.status(404).json({ message: 'Recipe not found' });
+  } catch (error) {
+      console.error('Error fetching recipe:', error);
+      res.status(500).json({ message: 'Error fetching recipe' });
   }
 });
