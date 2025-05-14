@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipesContainer = document.getElementById('recipes-container');
     const searchInput = document.getElementById('search-input');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const sortSelect = document.getElementById('sort-select');
     const loadMoreBtn = document.getElementById('load-more-btn');
     const errorContainer = document.getElementById('error-container');
     const errorMessage = document.getElementById('error-message');
@@ -13,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // State
     let currentPage = 1;
     let currentFilter = 'all';
-    let currentSort = 'newest';
     let currentSearch = '';
     let allRecipes = [];
     let filteredRecipes = [];
@@ -66,39 +64,21 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Apply filters and sorting to recipes
      */
+    
+    
+    // Simplify the applyFiltersAndSort function by removing the sort logic:
     function applyFiltersAndSort() {
         // Filter recipes
         filteredRecipes = allRecipes.filter(recipe => {
-            // Apply search filter
             if (currentSearch && !recipe.title.toLowerCase().includes(currentSearch.toLowerCase())) {
                 return false;
             }
             
-            // Apply category filter
             if (currentFilter === 'all') {
                 return true;
             } else {
                 return recipe.strCategory === currentFilter;
             }
-            
-            return true;
-        });
-        
-        // Sort recipes
-        filteredRecipes.sort((a, b) => {
-            if (currentSort === 'newest') {
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            } else if (currentSort === 'oldest') {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            } else if (currentSort === 'az') {
-                return a.title.localeCompare(b.title);
-            } else if (currentSort === 'za') {
-                return b.title.localeCompare(a.title);
-            } else if (currentSort === 'quickest') {
-                return a.cookingTime - b.cookingTime;
-            }
-            
-            return 0;
         });
         
         // Reset pagination
@@ -129,6 +109,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageUrl = recipe.strMealThumb || recipe.image || 
                             'https://via.placeholder.com/300x200?text=No+Image';
             
+            // Get the category from the API response
+            const category = recipe.strCategory || '';
+            
             card.innerHTML = `
                 <div class="recipe-card-image">
                     <img src="${imageUrl}" alt="${recipe.strMeal || recipe.title}" class="recipe-image">
@@ -136,12 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="recipe-content">
                     <h3 class="recipe-title">${recipe.strMeal || recipe.title}</h3>
                     <div class="recipe-meta">
-                        <span class="recipe-category">${recipe.strCategory || 'Uncategorized'}</span>
-                        <div class="recipe-stats">
-                            <span class="stat-item">
-                                <i class="fas fa-clock stat-icon"></i> ${recipe.cookingTime || 'N/A'} mins
-                            </span>
-                        </div>
+                        <span class="recipe-category">${category}</span>
                     </div>
                 </div>
             `;
@@ -231,11 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Sort select
-        sortSelect.addEventListener('change', function() {
-            currentSort = this.value;
-            applyFiltersAndSort();
-        });
+        // Remove sort select event listener as it's not needed
         
         // Load more button
         loadMoreBtn.addEventListener('click', function() {

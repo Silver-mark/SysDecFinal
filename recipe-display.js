@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('No user ID found, but continuing to allow recipe viewing');
     }
     
+    
     /**
      * Fetch recipe data using the API
      */
@@ -59,17 +60,20 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showLoading('Loading recipe...');
             
-            // First try to fetch from API
+            // This is correct - using fetch API to get data from your backend
             const response = await fetch(`/api/recipes/${id}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Content-Type': 'application/json'
                 }
             });
             
             if (response.ok) {
                 const recipe = await response.json();
+                
+                // Check recipe record status
+                await checkRecipeRecordStatus(id);
+                
                 displayRecipe(recipe);
                 hideLoading();
                 return;
@@ -79,13 +83,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const userRecipesResponse = await fetch(`/api/users/${localStorage.getItem('userId')}/recipes/${id}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Content-Type': 'application/json'
                 }
             });
             
             if (userRecipesResponse.ok) {
                 const recipe = await userRecipesResponse.json();
+                
+                // Check recipe record status
+                await checkRecipeRecordStatus(id);
+                
                 displayRecipe(recipe);
                 hideLoading();
                 return;
@@ -95,6 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof getRecipeById === 'function') {
                 const recipe = await getRecipeById(id);
                 if (recipe) {
+                    // Check recipe record status
+                    await checkRecipeRecordStatus(id);
+                    
                     displayRecipe(recipe);
                     hideLoading();
                     return;
@@ -108,6 +118,148 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Error loading recipe: ' + error.message);
             hideLoading();
         }
+    }
+
+    /**
+     * Check recipe record status
+     */
+    async function checkRecipeRecordStatus(recipeId) {
+        try {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                console.log('No user ID found, skipping recipe record check');
+                return;
+            }
+            
+            const response = await fetch(`/api/recipe-records/${recipeId}/user/${userId}/status`);
+            
+            if (response.ok) {
+                const { rated, favorited, ratedCount } = await response.json();
+                
+                // Update star button
+                updateStarButton(rated, ratedCount);
+                
+                // Update favorite button
+                updateFavoriteButton(favorited);
+            }
+        } catch (error) {
+            console.error('Error checking recipe record status:', error);
+        }
+    }
+
+    /**
+     * Update star button based on user's rating status
+     */
+    function updateStarButton(rated, ratedCount) {
+        const starIcon = starBtn.querySelector('i');
+        
+        // Update star count
+        starCount.textContent = ratedCount;
+        
+        // Update star icon and text
+        if (rated) {
+            starIcon.classList.remove('far');
+            starIcon.classList.add('fas');
+            starBtn.querySelector('span').textContent = 'Rated';
+        } else {
+            starIcon.classList.remove('fas');
+            starIcon.classList.add('far');
+            starBtn.querySelector('span').textContent = 'Rate Recipe';
+        }
+    }
+
+    /**
+     * Update favorite button based on user's favorite status
+     */
+    function updateFavoriteButton(favorited) {
+        const heartIcon = favoriteBtn.querySelector('i');
+        
+        if (favorited) {
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
+            favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';
+        } else {
+            heartIcon.classList.remove('fas');
+            heartIcon.classList.add('far');
+            favoriteBtn.querySelector('span').textContent = 'Add to Favorites';
+        }
+    }
+
+    /**
+     * Set up event listeners for buttons
+     */
+    function setupEventListeners() {
+        // Star button click handler
+        starBtn.addEventListener('click', async function() {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                showToast('Please log in to rate recipes');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/recipe-records/${recipeId}/rate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+                
+                if (response.ok) {
+                    const { rated, ratedCount, message } = await response.json();
+                    
+                    // Update star button
+                    updateStarButton(rated, ratedCount);
+                    
+                    // Show toast message
+                    showToast(message);
+                }
+            } catch (error) {
+                console.error('Error rating recipe:', error);
+                showToast('Error rating recipe');
+            }
+        });
+        
+        // Favorite button click handler
+        favoriteBtn.addEventListener('click', async function() {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                showToast('Please log in to favorite recipes');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/recipe-records/${recipeId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+                
+                if (response.ok) {
+                    const { favorited, message } = await response.json();
+                    
+                    // Update favorite button
+                    updateFavoriteButton(favorited);
+                    
+                    // Show toast message
+                    showToast(message);
+                }
+            } catch (error) {
+                console.error('Error updating favorite status:', error);
+                showToast('Error updating favorite status');
+            }
+        });
+        
+        // Print button click handler
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
     }
     
     /**
@@ -153,9 +305,6 @@ document.addEventListener('DOMContentLoaded', function() {
         difficultyTag.className = 'recipe-tag';
         difficultyTag.textContent = capitalizeFirstLetter(recipe.difficulty || 'medium');
         recipeTags.appendChild(difficultyTag);
-        
-        // Display mock nutrition facts
-        displayMockNutritionFacts();
         
         // Setup action buttons
         setupActionButtons(recipe);
@@ -228,42 +377,54 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Display mock nutrition facts
      */
-    function displayMockNutritionFacts() {
-        const nutritionItems = [
-            { name: 'Calories', value: '350 kcal' },
-            { name: 'Protein', value: '12g' },
-            { name: 'Carbs', value: '45g' },
-            { name: 'Fat', value: '14g' },
-            { name: 'Fiber', value: '5g' },
-            { name: 'Sugar', value: '8g' }
-        ];
-        
-        nutritionFacts.innerHTML = '';
-        
-        nutritionItems.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'nutrition-item';
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'nutrition-name';
-            nameSpan.textContent = item.name;
-            
-            const valueSpan = document.createElement('span');
-            valueSpan.className = 'nutrition-value';
-            valueSpan.textContent = item.value;
-            
-            div.appendChild(nameSpan);
-            div.appendChild(valueSpan);
-            nutritionFacts.appendChild(div);
-        });
-    }
+    
     
     /**
      * Set up action buttons for user recipes
      */
     function setupActionButtons(recipe) {
-        const userId = localStorage.getItem('userId');
-        
+        // Add event listener for favorite button
+        favoriteBtn.addEventListener('click', async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    showError('Please sign in to add favorites');
+                    return;
+                }
+    
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({
+                        favorites: [recipe._id] // Send the recipe ID in an array
+                    })
+                });
+    
+                if (response.ok) {
+                    const heartIcon = favoriteBtn.querySelector('i');
+                    if (heartIcon.classList.contains('far')) {
+                        heartIcon.classList.remove('far');
+                        heartIcon.classList.add('fas');
+                        favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';
+                        showToast('Added to favorites!');
+                    } else {
+                        heartIcon.classList.remove('fas');
+                        heartIcon.classList.add('far');
+                        favoriteBtn.querySelector('span').textContent = 'Add to Favorites';
+                        showToast('Removed from favorites!');
+                    }
+                } else {
+                    throw new Error('Failed to update favorites');
+                }
+            } catch (error) {
+                console.error('Error updating favorites:', error);
+                showError('Failed to update favorites');
+            }
+        });
+    
         // Star/Rate button
         if (starBtn) {
             starBtn.onclick = function() {
@@ -283,77 +444,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 rateRecipe(recipe._id);
             };
         }
-        
-        // Favorite button
-        if (favoriteBtn) {
-            favoriteBtn.onclick = function() {
-                if (!userId) {
-                    showError('Please sign in to add favorites');
-                    return;
-                }
-                
-                const heartIcon = favoriteBtn.querySelector('i');
-                const isFavorite = heartIcon.classList.contains('fas');
-                
-                if (isFavorite) {
-                    heartIcon.classList.remove('fas');
-                    heartIcon.classList.add('far');
-                    favoriteBtn.querySelector('span').textContent = 'Add to Favorites';
-                    showToast('Removed from favorites');
-                } else {
-                    heartIcon.classList.remove('far');
-                    heartIcon.classList.add('fas');
-                    favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';
-                    showToast('Added to favorites!');
-                }
-                
-                toggleFavorite(recipe._id);
-            };
-        }
-        
-        // Save button
-        if (saveBtn) {
-            saveBtn.onclick = function() {
-                if (!userId) {
-                    showError('Please sign in to save recipes');
-                    return;
-                }
-                
-                const bookmarkIcon = saveBtn.querySelector('i');
-                const isSaved = bookmarkIcon.classList.contains('fas');
-                
-                if (isSaved) {
-                    bookmarkIcon.classList.remove('fas');
-                    bookmarkIcon.classList.add('far');
-                    showToast('Recipe removed from your collection');
-                } else {
-                    bookmarkIcon.classList.remove('far');
-                    bookmarkIcon.classList.add('fas');
-                    showToast('Recipe saved to your collection!');
-                }
-                
-                saveRecipe(recipe._id);
-            };
-        }
-        
-        // Print button
-        if (printBtn) {
-            printBtn.onclick = function() {
-                window.print();
-            };
-        }
-        
-        // Copy button
-        if (copyBtn) {
-            copyBtn.onclick = function() {
-                if (!userId) {
-                    showError('Please sign in to copy recipes');
-                    return;
-                }
-                showToast('Recipe copied to your collection!');
-                copyRecipe(recipe._id);
-            };
-        }
+               
+        // Print button click handler
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
     }
     
     /**
@@ -380,12 +475,13 @@ document.addEventListener('DOMContentLoaded', function() {
      * Show toast message
      */
     function showToast(message) {
-        toastMessage.textContent = message;
-        toastMessage.classList.add('show');
-        
-        setTimeout(function() {
-            toastMessage.classList.remove('show');
-        }, 3000);
+        if (toastMessage) {
+            toastMessage.textContent = message;
+            toastMessage.classList.add('show');
+            setTimeout(() => {
+                toastMessage.classList.remove('show');
+            }, 3000);
+        }
     }
     
     /**
@@ -421,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    //'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                 },
                 body: JSON.stringify({ rating: 5 }) // Default to 5 stars for now
             });
@@ -438,22 +534,81 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function toggleFavorite(recipeId) {
-        // Implement favorite functionality
         try {
-            const response = await fetch(`/api/recipes/${recipeId}/favorite`, {
-                method: 'POST',
+            const userId = localStorage.getItem('userId');
+            const authToken = localStorage.getItem('authToken');
+            
+            if (!userId || !authToken) {
+                showError('Please sign in to add favorites');
+                return;
+            }
+            
+            const response = await fetch(`/api/users/${userId}`, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Authorization': `Bearer ${authToken}`
                 }
             });
             
             if (!response.ok) {
-                throw new Error('Failed to toggle favorite');
+                throw new Error('Failed to fetch user data');
             }
+            
+            const userData = await response.json();
+            
+            // Initialize profileData if it doesn't exist
+            if (!userData.profileData) {
+                userData.profileData = { favorites: [] };
+            }
+            
+            // Initialize favorites array if it doesn't exist
+            if (!userData.profileData.favorites) {
+                userData.profileData.favorites = [];
+            }
+            
+            const favorites = userData.profileData.favorites;
+            const isFavorited = favorites.includes(recipeId);
+            
+            if (isFavorited) {
+                // Remove from favorites
+                userData.profileData.favorites = favorites.filter(id => id !== recipeId);
+            } else {
+                // Add to favorites
+                userData.profileData.favorites.push(recipeId);
+            }
+            
+            // Update user data
+            const updateResponse = await fetch(`/api/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    profileData: userData.profileData
+                })
+            });
+            
+            if (!updateResponse.ok) {
+                throw new Error('Failed to update favorites');
+            }
+            
+            // Update UI
+            const heartIcon = favoriteBtn.querySelector('i');
+            if (isFavorited) {
+                heartIcon.classList.remove('fas');
+                heartIcon.classList.add('far');
+                favoriteBtn.querySelector('span').textContent = 'Add to Favorites';
+                showToast('Removed from favorites');
+            } else {
+                heartIcon.classList.remove('far');
+                heartIcon.classList.add('fas');
+                favoriteBtn.querySelector('span').textContent = 'Remove from Favorites';
+                showToast('Added to favorites');
+            }
+            
         } catch (error) {
             console.error('Error toggling favorite:', error);
-            showError('Favorite functionality coming soon!');
+            showError('Failed to update favorites');
         }
     }
     
@@ -464,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    //'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
             
@@ -477,23 +632,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    async function copyRecipe(recipeId) {
-        // Implement copy functionality
-        try {
-            const response = await fetch(`/api/recipes/${recipeId}/copy`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error('Failed to copy recipe');
-            }
-        } catch (error) {
-            console.error('Error copying recipe:', error);
-            showError('Copy functionality coming soon!');
-        }
-    }
 });

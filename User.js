@@ -29,11 +29,14 @@ const userSchema = mongoose.Schema(
     profileData: {
       type: {
         bio: String,
-        avatar: String,
-        created: [{ type: String }], // Array of recipe IDs
-        mealPlans: [{ type: String }], // Array of meal plan IDs
-        rated: [{ type: String }], // Array of rated recipe IDs
-        favorites: [{ type: String }], // Array of favorite recipe IDs
+        avatar: {
+          data: Buffer,
+          contentType: String
+        },
+        created: [{ type: String }],
+        mealPlans: [{ type: String }],
+        rated: [{ type: String }],
+        favorites: [{ type: String }],
         preferences: {
           cuisines: [{ type: String }],
           diet: { type: String, default: 'none' },
@@ -43,10 +46,10 @@ const userSchema = mongoose.Schema(
       },
       default: {
         bio: '',
-        avatar: '',
-        created: ['53062'],
-        mealPlans: ['53062'],
-        rated: ['53062'],
+        avatar: null,
+        created: [''],
+        mealPlans: [''],
+        rated: [''],
         favorites: ['53062'],
         preferences: {
           cuisines: [],

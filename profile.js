@@ -79,7 +79,7 @@ function setupCreateRecipeButton() {
     }
 }
 
-// Modify the displayUserProfile function to remove preferences section
+// Modify the displayUserProfile function to handle binary avatar
 function displayUserProfile(userData) {
     // Basic profile info
     document.querySelector('.profile-name').textContent = userData.name || 'User';
@@ -88,15 +88,14 @@ function displayUserProfile(userData) {
     // Profile image
     const profileImage = document.querySelector('.profile-avatar');
     if (profileImage) {
-        if (userData.profileImage) {
-            profileImage.src = userData.profileImage;
-        } else if (userData.avatar) {
-            profileImage.src = userData.avatar;
+        const userId = localStorage.getItem('userId');
+        if (userData.hasAvatar) {
+            // Set src to the avatar endpoint with cache-busting
+            profileImage.src = `/api/users/${userId}/avatar?t=${new Date().getTime()}`;
         } else {
             profileImage.src = 'https://via.placeholder.com/150?text=Profile';
         }
     }
-    
 }
 
 // Load user profile data from database
@@ -150,7 +149,7 @@ async function loadUserProfile() {
                         name: localStorage.getItem('userName') || 'User',
                         email: localStorage.getItem('userEmail') || '',
                         bio: 'Click edit to update your profile.',
-                        profileImage: 'https://via.placeholder.com/150'
+                        profileImage: ''
                     };
                 }
                 console.log('Using cached/fallback data:', userData);
@@ -249,7 +248,6 @@ async function saveProfileChanges(event) {
     } else {
         // Keep existing image if no new one is uploaded
         const existingImage = document.querySelector('.profile-avatar');
-        profileImage = existingImage ? existingImage.src : 'https://via.placeholder.com/150?text=Profile';
     }
     
     // Get existing data from localStorage or use empty arrays as fallback
@@ -278,8 +276,8 @@ async function saveProfileChanges(event) {
     try {
         showLoading('Updating profile...');
         
-        // Updated API call with proper endpoint and auth token
-        const response = await fetch('/api/users/profile', {
+        // Use the alternative endpoint that's already defined in your server
+        const response = await fetch('/api/users/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -692,19 +690,20 @@ async function loadFavorites() {
         
         favoritesContainer.innerHTML = '<div class="loading">Loading favorites...</div>';
         
-        const response = await fetch(`/api/users/${userId}/favorites`, {
+        // Fetch user data
+        const response = await fetch(`/api/users/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
         
         if (!response.ok) {
-            throw new Error('Failed to fetch favorites');
+            throw new Error('Failed to fetch user data');
         }
         
-        const data = await response.json();
+        const userData = await response.json();
         
-        if (!data.favorites || data.favorites.length === 0) {
+        if (!userData.favorites || userData.favorites.length === 0) {
             favoritesContainer.innerHTML = `
                 <div class="empty-state">
                     <p>You haven't added any favorites yet.</p>
@@ -712,6 +711,20 @@ async function loadFavorites() {
                 </div>
             `;
             return;
+        }
+        
+        // Now we need to fetch details for each favorite recipe ID
+        const favoriteRecipes = [];
+        for (const recipeId of userData.favorites) {
+            try {
+                const recipeResponse = await fetch(`/api/recipes/${recipeId}`);
+                if (recipeResponse.ok) {
+                    const recipe = await recipeResponse.json();
+                    favoriteRecipes.push(recipe);
+                }
+            } catch (error) {
+                console.error(`Error fetching recipe ${recipeId}:`, error);
+            }
         }
         
         // Display favorites
@@ -722,7 +735,7 @@ async function loadFavorites() {
             <div class="recipes-grid">
         `;
         
-        data.favorites.forEach(recipe => {
+        favoriteRecipes.forEach(recipe => {
             html += `
                 <div class="recipe-card">
                     <img src="${recipe.image || 'https://via.placeholder.com/300x200?text=Recipe'}" alt="${recipe.title}" class="recipe-image">

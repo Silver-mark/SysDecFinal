@@ -96,18 +96,6 @@ body {
     border-color: #e67e22;
 }
 
-.sort-container {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.sort-select {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-}
 
 /* Results Section */
 .results-section {

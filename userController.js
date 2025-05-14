@@ -125,7 +125,15 @@ const getUserProfileById = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { userId, name, bio, avatar, created, mealPlans, rated, favorites, preferences } = req.body;
+    const { userId, name, bio } = req.body;
+    let avatar = null;
+    
+    if (req.file) {
+      avatar = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype
+      };
+    }
     
     const user = await User.findById(userId);
     
@@ -138,12 +146,12 @@ const updateUserProfile = async (req, res) => {
     user.profileData = {
       ...user.profileData,
       bio: bio || user.profileData?.bio || '',
-      avatar: avatar || user.profileData?.avatar || '',
-      created: created || user.profileData?.created || [],
-      mealPlans: mealPlans || user.profileData?.mealPlans || [],
-      rated: rated || user.profileData?.rated || [],
-      favorites: favorites || user.profileData?.favorites || [],
-      preferences: preferences || user.profileData?.preferences || {
+      avatar: avatar || user.profileData?.avatar,
+      created: user.profileData?.created || [],
+      mealPlans: user.profileData?.mealPlans || [],
+      rated: user.profileData?.rated || [],
+      favorites: user.profileData?.favorites || [],
+      preferences: user.profileData?.preferences || {
         cuisines: [],
         diet: 'none',
         skillLevel: 'beginner',
@@ -157,6 +165,7 @@ const updateUserProfile = async (req, res) => {
       _id: user._id,
       name: user.name,
       bio: user.profileData.bio,
+      hasAvatar: !!user.profileData?.avatar?.data,
       created: user.profileData.created,
       mealPlans: user.profileData.mealPlans,
       rated: user.profileData.rated,
@@ -242,11 +251,93 @@ const googleSignup = async (req, res) => {
   }
 };
 
-module.exports = { 
-  registerUser, 
-  loginUser, 
-  getUserProfileById, 
+// @desc    Add a recipe to user's favorites
+// @route   POST /api/users/favorites/add
+// @access  Private
+const addToFavorites = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.body;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Initialize favorites array if it doesn't exist
+    if (!user.profileData.favorites) {
+      user.profileData.favorites = [];
+    }
+    
+    // Check if recipe is already in favorites
+    if (!user.profileData.favorites.includes(recipeId)) {
+      user.profileData.favorites.push(recipeId);
+      await user.save();
+    }
+    
+    res.json({
+      success: true,
+      favorites: user.profileData.favorites
+    });
+  } catch (error) {
+    console.error('Add to favorites error:', error);
+    res.status(400).json({ message: 'Could not add to favorites' });
+  }
+};
+
+const removeFromFavorites = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.body;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Remove recipe from favorites if it exists
+    if (user.profileData.favorites) {
+      user.profileData.favorites = user.profileData.favorites.filter(id => id !== recipeId);
+      await user.save();
+    }
+    
+    res.json({
+      success: true,
+      favorites: user.profileData.favorites
+    });
+  } catch (error) {
+    console.error('Remove from favorites error:', error);
+    res.status(400).json({ message: 'Could not remove from favorites' });
+  }
+};
+
+const checkFavorite = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.params;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const isFavorite = user.profileData.favorites?.includes(recipeId) || false;
+    
+    res.json({ isFavorite });
+  } catch (error) {
+    console.error('Check favorite error:', error);
+    res.status(400).json({ message: 'Could not check favorite status' });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfileById,
   updateUserProfile,
+  addToFavorites,
+  removeFromFavorites,
+  checkFavorite,
   googleAuth,
   googleSignup
 };
